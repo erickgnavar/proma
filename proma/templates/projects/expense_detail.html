@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ expense.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'projects:expense-update' expense.id %}">
+          <i class="fas fa-edit"></i>
+          {% trans 'Edit' %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td>{% trans 'Project' %}</td>
+            <td>{{ expense.project.name }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Amount' %}</td>
+            <td>{{ expense.amount }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Date' %}</td>
+            <td>{{ expense.date }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Notes' %}</td>
+            <td>{{ expense.notes|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Attachment' %}</td>
+            <td>
+              {% if expense.attachment %}
+                <a class="btn btn-sm btn-outline-secondary" href="{% get_media_prefix %}{{ expense.attachment }}">
+                  <i class="fas fa-download"></i>
+                  {% trans 'Download' %}
+                </a>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}

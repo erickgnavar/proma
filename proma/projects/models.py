@@ -76,3 +76,29 @@ class Project(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+class Expense(TimeStampedModel):
+
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+
+    name = models.CharField(_('Name'), max_length=100)
+    amount = models.DecimalField(_('Amount'), max_digits=10, decimal_places=2)
+    date = models.DateField(_('Date'), default=timezone.now)
+
+    notes = models.TextField(_('Notes'), blank=True, null=True)
+    attachment = models.FileField(
+        _('Attachment'),
+        upload_to='projects/expense/%Y/%m/%d/',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = _('Expense')
+        verbose_name_plural = _('Expenses')
+        default_related_name = 'expenses'
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name

@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.translation import ugettext as _
 
-from .models import Project
+from .models import Expense, Project
 
 
 class ProjectForm(forms.ModelForm):
@@ -18,4 +18,14 @@ class ProjectForm(forms.ModelForm):
         fields = (
             'client', 'name', 'start_date', 'end_date',
             'payment_type', 'rate', 'currency',
+        )
+
+
+class ExpenseForm(forms.ModelForm):
+
+    class Meta:
+        model = Expense
+        fields = (
+            'name', 'amount', 'project', 'date',
+            'notes', 'attachment',
         )

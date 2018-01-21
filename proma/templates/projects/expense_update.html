@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ expense.name }}</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <form method="post" enctype="multipart/form-data">
+        {% include 'projects/_expense_form.html' %}
+        <button class="btn btn-outline-primary" type="submit">
+          <i class="fas fa-save"></i>
+          {% trans 'Save' %}
+        </button>
+        <a class="btn btn-outline-secondary" href="{% url 'projects:expense-detail' expense.id %}">
+          {% trans 'Cancel' %}
+        </a>
+      </form>
+    </div>
+  </div>
+{% endblock content %}

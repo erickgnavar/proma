@@ -54,6 +54,12 @@
                   {% trans 'Projects' %}
                 </a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'projects:expense-list' %}">
+                  <span class="fas fa-money-bill-alt"></span>
+                  {% trans 'Expenses' %}
+                </a>
+              </li>
             </ul>
 
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
@@ -82,6 +88,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           {% block content %}{% endblock content %}
+          <br/>
         </main>
       </div>
     </div>
