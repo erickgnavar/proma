@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ client.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'clients:client-update' client.id %}">
+          <i class="fas fa-edit"></i>
+          {% trans 'Edit' %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td>{% trans 'Status' %}</td>
+            <td>{{ client.get_status_display }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Email' %}</td>
+            <td>{{ client.email }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Tax Identifier' %}</td>
+            <td>{{ client.tax_identifier }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}

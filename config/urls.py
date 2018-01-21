@@ -24,5 +24,6 @@ admin.site.site_header = 'Proma'
 urlpatterns = [
     path('super/', admin.site.urls),
     path('', include('proma.users.urls', namespace='auth')),
+    path('', include('proma.clients.urls', namespace='clients')),
     path('', login_required(TemplateView.as_view(template_name='home.html')), name='home'),
 ]
