@@ -1,0 +1,44 @@
+{% load i18n staticfiles crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% trans 'Signin' %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/fontawesome-all.min.css' %}">
+  </head>
+
+  <body>
+
+    <div class="container">
+      <br/>
+      <br/>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h1 class="text-center">Proma</h1>
+        </div>
+      </div>
+
+      <hr/>
+
+      <div class="row">
+        <div class="col-md-4 offset-md-4">
+          <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn btn-lg btn-primary btn-block" type="submit">
+              <i class="fas fa-sign-in-alt"></i> {% trans 'Sign in' %}
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+[run]
+include = proma/*
+omit = *migrations*, */tests/*, *apps.py
+source = .
