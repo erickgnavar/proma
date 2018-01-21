@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Sum
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
@@ -34,6 +35,11 @@ class ProjectListView(LoginRequiredMixin, ListView):
     model = Project
     paginate_by = 20
     context_object_name = 'projects'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.annotate(expenses_amount=Sum('expenses__amount'))
+        return qs
 
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):

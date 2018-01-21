@@ -23,6 +23,7 @@
             <td>{% trans 'Client' %}</td>
             <td>{% trans 'Start date' %}</td>
             <td>{% trans 'End date' %}</td>
+            <td>{% trans 'Expenses' %}</td>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +38,7 @@
             <td>{{ project.client }}</td>
             <td>{{ project.start_date }}</td>
             <td>{{ project.end_date|default_if_none:'' }}</td>
+            <td>{{ project.expenses_amount|default_if_none:'0.00' }}</td>
           </tr>
         {% endfor %}
         </tbody>
