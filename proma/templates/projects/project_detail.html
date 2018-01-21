@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ project.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'projects:project-update' project.id %}">
+          <i class="fas fa-edit"></i>
+          {% trans 'Edit' %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td>{% trans 'Client' %}</td>
+            <td>{{ project.client }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Status' %}</td>
+            <td>{{ project.get_status_display }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Start date' %}</td>
+            <td>{{ project.start_date }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'End date' %}</td>
+            <td>{{ project.end_date|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Payment type' %}</td>
+            <td>{{ project.get_payment_type_display }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Rate' %}</td>
+            <td>{{ project.currency }} {{ project.rate }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}
