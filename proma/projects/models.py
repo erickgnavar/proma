@@ -52,7 +52,7 @@ class Project(TimeStampedModel):
     )
 
     start_date = models.DateField(_('Start date'), default=timezone.now)
-    end_date = models.DateField(_('Start date'), blank=True, null=True)
+    end_date = models.DateField(_('End date'), blank=True, null=True)
 
     payment_type = models.CharField(
         _('Payment type'),
