@@ -23,11 +23,13 @@
           </tr>
           <tr>
             <td>{% trans 'Email' %}</td>
-            <td>{{ client.email }}</td>
+            <td>
+              <a href="mailto:{{ client.email }}">{{ client.email }}</a>
+            </td>
           </tr>
           <tr>
             <td>{% trans 'Tax Identifier' %}</td>
-            <td>{{ client.tax_identifier }}</td>
+            <td>{{ client.tax_identifier|default_if_none:'' }}</td>
           </tr>
         </tbody>
       </table>
