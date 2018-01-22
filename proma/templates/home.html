@@ -1,8 +1,48 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% block content %}
-  <div class="row">
-    <div class="col-md-6">
-      <p>Pulvinar etiam non quam lacus suspendisse faucibus interdum posuere lorem ipsum dolor sit amet, consectetur adipiscing elit duis tristique sollicitudin nibh sit. Eget est lorem ipsum dolor sit amet, consectetur.</p>
+<div class="row text-center">
+  <div class="col-sm-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ clients_quantity }} {% trans 'Clients' %}</h5>
+        <p>
+          <i class="fas fa-8x fa-users"></i>
+        </p>
+        <a href="{% url 'clients:client-create' %}" class="btn btn-outline-primary">
+          <i class="fas fa-plus"></i>
+          {% trans 'New client' %}
+        </a>
+      </div>
     </div>
   </div>
+  <div class="col-sm-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ projects_quantity }} {% trans 'Projects' %}</h5>
+        <p>
+          <i class="fas fa-8x fa-folder"></i>
+        </p>
+        <a href="{% url 'projects:project-create' %}" class="btn btn-outline-primary">
+          <i class="fas fa-plus"></i>
+          {% trans 'New project' %}
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ expenses_quantity }} {% trans 'Expenses' %}</h5>
+        <p>
+          <i class="fas fa-8x fa-money-bill-alt"></i>
+        </p>
+        <a href="{% url 'projects:expense-create' %}" class="btn btn-outline-primary">
+          <i class="fas fa-plus"></i>
+          {% trans 'New expense' %}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}

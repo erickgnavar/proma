@@ -14,9 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib.auth.decorators import login_required
 from django.urls import include, path
-from django.views.generic import TemplateView
+
+from proma.views import HomeView
 
 admin.site.site_title = 'Proma'
 admin.site.site_header = 'Proma'
@@ -26,5 +26,5 @@ urlpatterns = [
     path('', include('proma.users.urls', namespace='auth')),
     path('', include('proma.clients.urls', namespace='clients')),
     path('', include('proma.projects.urls', namespace='projects')),
-    path('', login_required(TemplateView.as_view(template_name='home.html')), name='home'),
+    path('', HomeView.as_view(), name='home'),
 ]
