@@ -67,6 +67,7 @@ class Project(TimeStampedModel):
         choices=CURRENCY_CHOICES,
         default=USD,
     )
+    notes = models.TextField(_('Notes'), blank=True, null=True)
 
     class Meta:
         verbose_name = _('Project')
@@ -89,7 +90,7 @@ class Expense(TimeStampedModel):
     notes = models.TextField(_('Notes'), blank=True, null=True)
     attachment = models.FileField(
         _('Attachment'),
-        upload_to='projects/expense/%Y/%m/%d/',
+        upload_to='projects/expense/attachment/%Y/%m/%d/',
         blank=True,
         null=True,
     )

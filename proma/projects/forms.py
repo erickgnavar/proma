@@ -17,7 +17,7 @@ class ProjectForm(forms.ModelForm):
         model = Project
         fields = (
             'client', 'name', 'start_date', 'end_date',
-            'payment_type', 'rate', 'currency',
+            'payment_type', 'rate', 'currency', 'notes',
         )
 
 

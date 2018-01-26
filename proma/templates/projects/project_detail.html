@@ -41,6 +41,10 @@
             <td>{% trans 'Rate' %}</td>
             <td>{{ project.currency }} {{ project.rate }}</td>
           </tr>
+          <tr>
+            <td>{% trans 'Notes' %}</td>
+            <td>{{ project.notes|default_if_none:'' }}</td>
+          </tr>
         </tbody>
       </table>
     </div>
