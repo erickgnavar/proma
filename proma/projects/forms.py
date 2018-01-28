@@ -4,7 +4,23 @@ from django.utils.translation import ugettext as _
 from .models import Expense, Project
 
 
-class ProjectForm(forms.ModelForm):
+class FormWithDateFields(object):
+    """
+    Add field attributes to use a datepicket component
+    """
+
+    date_fields = tuple()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.date_fields:
+            self.fields[field_name].widget.attrs['data-provide'] = 'datepicker'
+            self.fields[field_name].widget.attrs['data-date-format'] = 'yyyy-mm-dd'
+
+
+class ProjectForm(FormWithDateFields, forms.ModelForm):
+
+    date_fields = ('start_date', 'end_date',)
 
     def clean_end_date(self):
         start_date = self.cleaned_data.get('start_date')
@@ -21,7 +37,9 @@ class ProjectForm(forms.ModelForm):
         )
 
 
-class ExpenseForm(forms.ModelForm):
+class ExpenseForm(FormWithDateFields, forms.ModelForm):
+
+    date_fields = ('date',)
 
     class Meta:
         model = Expense

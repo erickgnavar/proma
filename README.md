@@ -14,3 +14,4 @@ Simple app to manage freelance stuff like client, payments, etc.
 
 - Bootstrap 4
 - jQuery
+- Bootstrap datepicker https://bootstrap-datepicker.readthedocs.io/en/latest/
