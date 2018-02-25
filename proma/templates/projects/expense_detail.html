@@ -34,6 +34,16 @@
             <td>{{ expense.notes|default_if_none:'' }}</td>
           </tr>
           <tr>
+            <td>{% trans 'Is billable?' %}</td>
+            <td>
+              {% if expense.is_billable %}
+                <i class="fas fa-check-circle"></i>
+              {% else %}
+                <i class="fas fa-times-circle"></i>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
             <td>{% trans 'Attachment' %}</td>
             <td>
               {% if expense.attachment %}

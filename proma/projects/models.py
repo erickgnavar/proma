@@ -94,6 +94,7 @@ class Expense(TimeStampedModel):
         blank=True,
         null=True,
     )
+    is_billable = models.BooleanField(_('Is billable?'), default=False)
 
     class Meta:
         verbose_name = _('Expense')

@@ -22,6 +22,7 @@
             <td>{% trans 'Name' %}</td>
             <td>{% trans 'Amount' %}</td>
             <td>{% trans 'Date' %}</td>
+            <td>{% trans 'Is billable?' %}</td>
             <td>{% trans 'Project' %}</td>
           </tr>
         </thead>
@@ -36,6 +37,13 @@
             </td>
             <td>{{ expense.amount }}</td>
             <td>{{ expense.date }}</td>
+            <td>
+              {% if expense.is_billable %}
+                <i class="fas fa-check-circle"></i>
+              {% else %}
+                <i class="fas fa-times-circle"></i>
+              {% endif %}
+            </td>
             <td>{{ expense.project.name }}</td>
           </tr>
         {% endfor %}

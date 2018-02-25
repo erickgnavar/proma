@@ -33,5 +33,5 @@ class ExpenseForm(FormWithDateFields, forms.ModelForm):
         model = Expense
         fields = (
             'name', 'amount', 'project', 'date',
-            'notes', 'attachment',
+            'notes', 'attachment', 'is_billable',
         )
