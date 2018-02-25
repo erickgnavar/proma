@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 
+from .exceptions import InvoiceException
+
 
 def default_due_date():
     return timezone.now() + relativedelta(months=1)
@@ -84,17 +86,29 @@ class Invoice(TimeStampedModel):
             return f'#{self.number}'
 
     def open(self):
+        if self.status != self.DRAFT:
+            raise InvoiceException('Invalid status')
+        if not self.items.count():
+            raise InvoiceException('The invoice must has at least 1 item to be opened')
         self.opening_date = timezone.now()
         self.status = self.OPEN
         self._compute_number()
 
     def pay(self):
+        if self.status != self.OPEN:
+            raise InvoiceException('Invalid status')
         self.payment_date = timezone.now()
         self.status = self.PAID
 
     def cancel(self):
+        if self.status != self.OPEN:
+            raise InvoiceException('Invalid status')
         self.cancellation_date = timezone.now()
         self.status = self.CANCELLED
+
+    @property
+    def can_be_edited(self):
+        return self.status == self.DRAFT
 
     def _compute_number(self):
         if self.status == self.DRAFT:

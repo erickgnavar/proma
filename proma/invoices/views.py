@@ -1,7 +1,12 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.utils.translation import ugettext as _
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  RedirectView, UpdateView)
 
+from .exceptions import InvoiceException
 from .forms import InvoiceForm, ItemsFormset
 from .models import Invoice
 
@@ -45,6 +50,14 @@ class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
     form_class = InvoiceForm
     pk_url_kwarg = 'id'
 
+    def dispatch(self, request, *args, **kwargs):
+        invoice = self.get_object()
+        if invoice.can_be_edited:
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            messages.error(request, _("The invoice can't be edited"))
+            return redirect('invoices:invoice-detail', id=invoice.id)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['items_formset'] = ItemsFormset(self.request.POST or None, instance=self.object)
@@ -81,3 +94,30 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
     model = Invoice
     context_object_name = 'invoice'
     pk_url_kwarg = 'id'
+
+
+class InvoiceActionView(LoginRequiredMixin, RedirectView):
+
+    def dispatch(self, request, *args, **kwargs):
+        self.invoice = get_object_or_404(Invoice, id=kwargs.get('id'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, **kwargs):
+        action = kwargs.get('action')
+        if action == 'open':
+            try:
+                self.invoice.open()
+                self.invoice.save()
+                messages.success(self.request, _('Invoice opened!'))
+            except InvoiceException as ex:
+                messages.error(self.request, str(ex))
+        elif action == 'cancel':
+            try:
+                self.invoice.cancel()
+                self.invoice.save()
+                messages.success(self.request, _('Invoice canceled!'))
+            except InvoiceException as ex:
+                messages.error(self.request, str(ex))
+        return reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        })

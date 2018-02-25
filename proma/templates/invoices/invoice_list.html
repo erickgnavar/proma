@@ -22,6 +22,7 @@
             <td>{% trans 'Client' %}</td>
             <td>{% trans 'Issue date' %}</td>
             <td>{% trans 'Due date' %}</td>
+            <td>{% trans 'Status' %}</td>
             <td>{% trans 'Total' %}</td>
           </tr>
         </thead>
@@ -37,6 +38,7 @@
             <td>{{ invoice.client }}</td>
             <td>{{ invoice.issue_date }}</td>
             <td>{{ invoice.due_date|default_if_none:'' }}</td>
+            <td>{{ invoice.get_status_display }}</td>
             <td>{{ invoice.total }}</td>
           </tr>
         {% endfor %}

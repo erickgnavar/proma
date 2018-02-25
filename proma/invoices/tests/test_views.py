@@ -1,3 +1,4 @@
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
 from mixer.backend.django import mixer
@@ -114,6 +115,19 @@ class InvoiceUpdateViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.context_data['form'].errors) > 0)
 
+    def test_redirect_when_try_to_edit_a_non_draft_invoice(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        self.invoice.status = Invoice.OPEN
+        self.invoice.save()
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        }))
+
 
 class InvoiceListViewTestCase(TestCase):
 
@@ -154,3 +168,49 @@ class InvoiceDetailViewTestCase(TestCase):
         response = self.view(request, id=self.invoice.id)
         self.assertEqual(response.status_code, 200)
         self.assertIn('invoice', response.context_data)
+
+
+class InvoiceActionViewtTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceActionView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.invoice = mixer.blend('invoices.Invoice')
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/1/action/open/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+        url = resolve('/invoices/1/action/cancel/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_open_successful(self):
+        self.invoice.items.create(rate=10, units=10)
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        self.assertEqual(self.invoice.status, Invoice.DRAFT)
+        response = self.view(request, id=self.invoice.id, action='open')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        }))
+        self.invoice.refresh_from_db()
+        self.assertEqual(self.invoice.status, Invoice.OPEN)
+
+    def test_cancel_successful(self):
+        self.invoice.status = Invoice.OPEN
+        self.invoice.save()
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        self.assertEqual(self.invoice.status, Invoice.OPEN)
+        response = self.view(request, id=self.invoice.id, action='cancel')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        }))
+        self.invoice.refresh_from_db()
+        self.assertEqual(self.invoice.status, Invoice.CANCELLED)

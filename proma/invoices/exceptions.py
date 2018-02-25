@@ -1,0 +1,2 @@
+class InvoiceException(Exception):
+    pass

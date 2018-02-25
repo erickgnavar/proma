@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 from mixer.backend.django import mixer
 
+from ..exceptions import InvoiceException
 from ..models import Invoice, Item
 
 
@@ -81,6 +82,94 @@ class InvoiceTestCase(TestCase):
         now = timezone.now()
         number = f'{now.year}00001'
         self.assertEqual(invoice.number, number)
+
+    def test_open(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+        )
+        invoice.items.create(
+            rate=10,
+            units=10,
+        )
+        self.assertEqual(invoice.status, Invoice.DRAFT)
+        self.assertIsNone(invoice.opening_date)
+        invoice.open()
+        self.assertEqual(invoice.status, Invoice.OPEN)
+        self.assertIsNotNone(invoice.opening_date)
+
+    def test_open_raise_error_with_no_items(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+        )
+        with self.assertRaises(InvoiceException):
+            invoice.open()
+
+    def test_open_raise_error_for_wrong_status(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+            status=Invoice.CANCELLED,
+        )
+        with self.assertRaises(InvoiceException):
+            invoice.open()
+
+    def test_pay(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+            status=Invoice.OPEN,
+        )
+        self.assertEqual(invoice.status, Invoice.OPEN)
+        self.assertIsNone(invoice.payment_date)
+        invoice.pay()
+        self.assertEqual(invoice.status, Invoice.PAID)
+        self.assertIsNotNone(invoice.payment_date)
+
+    def test_pay_raise_error_for_wrong_status(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+            status=Invoice.DRAFT,
+        )
+        with self.assertRaises(InvoiceException):
+            invoice.pay()
+
+    def test_cancel(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+            status=Invoice.OPEN,
+        )
+        self.assertEqual(invoice.status, Invoice.OPEN)
+        self.assertIsNone(invoice.cancellation_date)
+        invoice.cancel()
+        self.assertEqual(invoice.status, Invoice.CANCELLED)
+        self.assertIsNotNone(invoice.cancellation_date)
+
+    def test_cancel_raise_error_for_wrong_status(self):
+        invoice = Invoice.objects.create(
+            due_date='2018-01-01',
+            client=self.client,
+            project=self.project,
+            tax_percent=10,
+            status=Invoice.DRAFT,
+        )
+        with self.assertRaises(InvoiceException):
+            invoice.cancel()
 
 
 class ItemTestCase(TestCase):
