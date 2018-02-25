@@ -79,7 +79,7 @@ class InvoiceTestCase(TestCase):
         invoice.status = Invoice.PAID
         invoice._compute_number()
         now = timezone.now()
-        number = f'#{now.year}00001'
+        number = f'{now.year}00001'
         self.assertEqual(invoice.number, number)
 
 

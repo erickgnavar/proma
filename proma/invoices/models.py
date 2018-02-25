@@ -113,7 +113,7 @@ class Invoice(TimeStampedModel):
             issue_date__year__lte=now.year + 1,
         ).count() + 1
         # TODO: Add more tests for this method
-        return f'#{now.year}{str(counter).zfill(5)}'
+        return f'{now.year}{str(counter).zfill(5)}'
 
     def compute_amounts(self):
         self.subtotal = reduce(lambda acc, item: acc + item.total, self.items.all(), Decimal(0))
