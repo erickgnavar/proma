@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Invoices</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'invoices:invoice-create' %}">
+          <i class="fas fa-plus"></i>
+          {% trans 'New invoice' %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <td>{% trans 'Number' %}</td>
+            <td>{% trans 'Client' %}</td>
+            <td>{% trans 'Issue date' %}</td>
+            <td>{% trans 'Due date' %}</td>
+            <td>{% trans 'Total' %}</td>
+          </tr>
+        </thead>
+        <tbody>
+        {% for invoice in invoices %}
+          <tr>
+            <td>
+              <a class="btn btn-outline-info btn-sm" href="{% url 'invoices:invoice-detail' invoice.id %}">
+                <i class="fas fa-info"></i>
+                {{ invoice }}
+              </a>
+            </td>
+            <td>{{ invoice.client }}</td>
+            <td>{{ invoice.issue_date }}</td>
+            <td>{{ invoice.due_date|default_if_none:'' }}</td>
+            <td>{{ invoice.total }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}

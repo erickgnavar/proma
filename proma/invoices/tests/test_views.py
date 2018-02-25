@@ -1,0 +1,156 @@
+from django.test import RequestFactory, TestCase
+from django.urls import resolve, reverse
+from mixer.backend.django import mixer
+
+from .. import views
+from ..models import Invoice
+
+
+class InvoiceCreateViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceCreateView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.client = mixer.blend('clients.Client')
+        self.project = mixer.blend('projects.Project')
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/create/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context_data)
+
+    def test_create_invoice(self):
+        data = {
+            'client': self.client.id,
+            'project': self.project.id,
+            'issue_date': '2018-10-10',
+            'due_date': '2018-10-11',
+            'items-TOTAL_FORMS': 1,
+            'items-INITIAL_FORMS': 0,
+            'items-0-description': 'test',
+            'items-0-units': 100,
+            'items-0-rate': 100,
+            'items-0-DELETE': False,
+        }
+        request = self.factory.post('/', data=data)
+        request.user = self.user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        last_invoice = Invoice.objects.last()
+        self.assertEqual(last_invoice.items.count(), 1)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': last_invoice.id,
+        }))
+
+    def test_create_invoice_missing_fields(self):
+        data = {
+            'client': self.client.id,
+        }
+        request = self.factory.post('/', data=data)
+        request.user = self.user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.context_data['form'].errors) > 0)
+
+
+class InvoiceUpdateViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceUpdateView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.client = mixer.blend('clients.Client')
+        self.project = mixer.blend('projects.Project')
+        self.invoice = mixer.blend('invoices.Invoice', client=self.client, project=self.project)
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/1/update/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context_data)
+
+    def test_update_invoice(self):
+        another_client = mixer.blend('clients.Client')
+        data = {
+            'client': another_client.id,
+            'project': self.project.id,
+            'issue_date': '2018-10-10',
+            'due_date': '2018-10-12',
+            'items-TOTAL_FORMS': 1,
+            'items-INITIAL_FORMS': 0,
+            'items-0-description': 'test',
+            'items-0-units': 100,
+            'items-0-rate': 100,
+            'items-0-DELETE': False,
+        }
+        request = self.factory.post('/', data=data)
+        request.user = self.user
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 302)
+        redirect_url = reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        })
+        self.assertEqual(response['location'], redirect_url)
+
+    def test_update_invoice_missing_fields(self):
+        data = {
+            'client': self.client.id,
+        }
+        request = self.factory.post('/', data=data)
+        request.user = self.user
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.context_data['form'].errors) > 0)
+
+
+class InvoiceListViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceListView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        mixer.cycle(5).blend('invoices.Invoice')
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('invoices', response.context_data)
+        self.assertEqual(response.context_data['invoices'].count(), 5)
+
+
+class InvoiceDetailViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceDetailView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.invoice = mixer.blend('invoices.Invoice')
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/1/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('invoice', response.context_data)

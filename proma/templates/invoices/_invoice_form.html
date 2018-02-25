@@ -1,0 +1,62 @@
+{% load form_tags i18n %}
+{% csrf_token %}
+<div class="row">
+  <div class="col-md-6">
+    {% field form.client %}
+    {% field form.project %}
+    {% field form.attachment %}
+  </div>
+  <div class="col-md-6">
+    {% field form.issue_date %}
+    {% field form.due_date %}
+    {% field form.tax_percent %}
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <button class="btn btn-sm btn-outline-secondary" type="button" id="btn-add-item">
+      <i class="fas fa-plus"></i> {% trans 'Add item' %}
+    </button>
+  </div>
+</div>
+<br/>
+<div class="row">
+  <div class="col-md-12">
+    {{ items_formset.management_form }}
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>{% trans 'Description' %}</th>
+          <th>{% trans 'Rate' %}</th>
+          <th>{% trans 'Units' %}</th>
+          <th>{% trans 'Delete' %}</th>
+        </tr>
+      </thead>
+      <tbody id="items-container">
+      {% for form in items_formset %}
+        <tr>
+          {% field form.id %}
+          <td>{% field form.description label=False %}</td>
+          <td>{% field form.rate label=False %}</td>
+          <td>{% field form.units label=False %}</td>
+          <td>{% field form.DELETE label=False %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+      {% with items_formset.empty_form as form %}
+      <tbody id="items-empty-container" style="display: none">
+        <tr>
+          {% field form.id %}
+          <td>{% field form.description label=False %}</td>
+          <td>{% field form.rate label=False %}</td>
+          <td>{% field form.units label=False %}</td>
+          <td>{% field form.DELETE label=False %}</td>
+        </tr>
+      </tbody>
+      {% endwith %}
+    </table>
+  </div>
+</div>
+<div class="row col-md-6">
+  {% field form.notes %}
+</div>

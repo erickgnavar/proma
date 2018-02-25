@@ -50,6 +50,7 @@ LOCAL_APPS = [
     'proma.users',
     'proma.clients',
     'proma.projects',
+    'proma.invoices',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

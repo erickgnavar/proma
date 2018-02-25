@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ invoice }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'invoices:invoice-update' invoice.id %}">
+          <i class="fas fa-edit"></i>
+          {% trans 'Edit' %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td>{% trans 'Status' %}</td>
+            <td>{{ invoice.get_status_display }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Client' %}</td>
+            <td>{{ invoice.client }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Project' %}</td>
+            <td>{{ invoice.project }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Issue date' %}</td>
+            <td>{{ invoice.issue_date }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Due date' %}</td>
+            <td>{{ invoice.due_date }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Attachment' %}</td>
+            <td>
+              {% if invoice.attachment %}
+              <a class="btn btn-sm btn-outline-secondary" href="{% get_media_prefix %}{{ invoice.attachment }}">
+                <i class="fas fa-download"></i> {% trans 'Download' %}
+              </a>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br/>
+      <table class="table table-bordered table-striped">
+        <thead>
+          <th>{% trans 'Description' %}</th>
+          <th class="text-right">{% trans 'Rate' %}</th>
+          <th class="text-right">{% trans 'Units' %}</th>
+          <th class="text-right">{% trans 'Total' %}</th>
+        </thead>
+        <tbody>
+          {% for item in invoice.items.all %}
+          <tr>
+            <td>{{ item.description }}</td>
+            <td class="text-right">{{ item.rate }}</td>
+            <td class="text-right">{{ item.units }}</td>
+            <td class="text-right">{{ item.total }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="text-right">
+            <td colspan="3" class="text-right">
+              {% trans 'Subtotal' %}
+            </td>
+            <td>
+              {{ invoice.subtotal }}
+            </td>
+          </tr>
+          <tr class="text-right">
+            <td colspan="3" class="text-right">
+              {% trans 'Taxes' %} {{ invoice.tax_percent|default_if_none:'0.00' }} %
+            </td>
+            <td>
+              {{ invoice.tax_total }}
+            </td>
+          </tr>
+          <tr class="text-right">
+            <td colspan="3">
+              {% trans 'Total' %}
+            </td>
+            <td>
+              {{ invoice.total }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br/>
+      <p>
+        {% trans 'Notes' %}
+      </p>
+      <p>
+        {{ invoice.notes|default_if_none:'' }}
+      </p>
+    </div>
+  </div>
+{% endblock content %}

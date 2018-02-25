@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content %}
 <div class="row text-center">
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">{{ clients_quantity }} {% trans 'Clients' %}</h5>
@@ -16,7 +16,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">{{ projects_quantity }} {% trans 'Projects' %}</h5>
@@ -30,7 +30,7 @@
       </div>
     </div>
   </div>
-  <div class="col-sm-4">
+  <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">{{ expenses_quantity }} {% trans 'Expenses' %}</h5>
@@ -40,6 +40,20 @@
         <a href="{% url 'projects:expense-create' %}" class="btn btn-outline-primary">
           <i class="fas fa-plus"></i>
           {% trans 'New expense' %}
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ invoices_quantity }} {% trans 'Invoices' %}</h5>
+        <p>
+          <i class="fas fa-8x fa-dollar-sign"></i>
+        </p>
+        <a href="{% url 'invoices:invoice-create' %}" class="btn btn-outline-primary">
+          <i class="fas fa-plus"></i>
+          {% trans 'New invoice' %}
         </a>
       </div>
     </div>

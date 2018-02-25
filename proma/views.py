@@ -2,6 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
 from proma.clients.models import Client
+from proma.invoices.models import Invoice
 from proma.projects.models import Expense, Project
 
 
@@ -15,5 +16,6 @@ class HomeView(LoginRequiredMixin, TemplateView):
             'projects_quantity': Project.objects.count(),
             'expenses_quantity': Expense.objects.count(),
             'clients_quantity': Client.objects.count(),
+            'invoices_quantity': Invoice.objects.count(),
         })
         return context

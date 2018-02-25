@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ invoice }}</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <form method="post" enctype="multipart/form-data">
+        {% include 'invoices/_invoice_form.html' %}
+        <button class="btn btn-outline-primary" type="submit">
+          <i class="fas fa-save"></i>
+          {% trans 'Save' %}
+        </button>
+        <a class="btn btn-outline-secondary" href="{% url 'invoices:invoice-detail' invoice.id %}">
+          {% trans 'Cancel' %}
+        </a>
+      </form>
+    </div>
+  </div>
+{% endblock content %}
+{% block javascript %}
+  <script src="{% static 'js/forms.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+      setupFormset('#items-container', '#items-empty-container', 'items', '#btn-add-item');
+    });
+  </script>
+{% endblock javascript %}

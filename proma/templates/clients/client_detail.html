@@ -45,6 +45,17 @@
         </a>
         {% endfor %}
       </div>
+      <hr/>
+      <h2>{% trans 'Invoices' %}</h2>
+      <div class="list-group">
+        {% for invoice in client.invoices.all %}
+        <a class="list-group-item list-group-item-action" href="{% url 'invoices:invoice-detail' invoice.id %}">
+          <i class="fas fa-folder"></i>
+          {{ invoice }} {{ invoice.total }}
+          <span class="badge badge-primary badge-pill">{{ invoice.get_status_display }}</span>
+        </a>
+        {% endfor %}
+      </div>
     </div>
   </div>
 {% endblock content %}
