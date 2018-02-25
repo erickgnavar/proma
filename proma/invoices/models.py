@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 
 from .exceptions import InvoiceException
+from .querysets import InvoiceQuerySet
 
 
 def default_due_date():
@@ -72,6 +73,8 @@ class Invoice(TimeStampedModel):
     )
 
     notes = models.TextField(_('Notes'), blank=True, null=True)
+
+    objects = InvoiceQuerySet.as_manager()
 
     class Meta:
         verbose_name = _('Invoice')
