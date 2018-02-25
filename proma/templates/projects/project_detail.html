@@ -19,7 +19,11 @@
         <tbody>
           <tr>
             <td>{% trans 'Client' %}</td>
-            <td>{{ project.client }}</td>
+            <td>
+              <a href="{% url 'clients:client-detail' project.client.id %}">
+                {{ project.client }}
+              </a>
+            </td>
           </tr>
           <tr>
             <td>{% trans 'Status' %}</td>
@@ -56,6 +60,17 @@
         <a class="list-group-item list-group-item-action" href="{% url 'projects:expense-detail' expense.id %}">
           <i class="fas fa-money-bill-alt"></i>
           {{ expense.name }} - {{ expense.amount }}
+        </a>
+        {% endfor %}
+      </div>
+      <hr/>
+      <h2>{% trans 'Invoices' %}</h2>
+      <div class="list-group">
+        {% for invoice in project.invoices.non_draft %}
+        <a class="list-group-item list-group-item-action" href="{% url 'invoices:invoice-detail' invoice.id %}">
+          <i class="fas fa-dollar-sign"></i>
+          {{ invoice }} {{ invoice.total }}
+          <span class="badge badge-primary badge-pill">{{ invoice.get_status_display }}</span>
         </a>
         {% endfor %}
       </div>

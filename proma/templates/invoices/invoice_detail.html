@@ -32,11 +32,19 @@
           </tr>
           <tr>
             <td>{% trans 'Client' %}</td>
-            <td>{{ invoice.client }}</td>
+            <td>
+              <a href="{% url 'clients:client-detail' invoice.client.id %}">
+                {{ invoice.client }}
+              </a>
+            </td>
           </tr>
           <tr>
             <td>{% trans 'Project' %}</td>
-            <td>{{ invoice.project }}</td>
+            <td>
+              <a href="{% url 'projects:project-detail' invoice.project.id %}">
+                {{ invoice.project }}
+              </a>
+            </td>
           </tr>
           <tr>
             <td>{% trans 'Issue date' %}</td>

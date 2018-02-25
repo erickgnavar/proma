@@ -19,7 +19,11 @@
         <tbody>
           <tr>
             <td>{% trans 'Project' %}</td>
-            <td>{{ expense.project.name }}</td>
+            <td>
+              <a href="{% url 'projects:project-detail' expense.project.id %}">
+                {{ expense.project }}
+              </a>
+            </td>
           </tr>
           <tr>
             <td>{% trans 'Amount' %}</td>
