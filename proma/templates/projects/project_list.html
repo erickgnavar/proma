@@ -21,6 +21,7 @@
           <tr>
             <td>{% trans 'Name' %}</td>
             <td>{% trans 'Client' %}</td>
+            <td>{% trans 'Payment type' %}</td>
             <td>{% trans 'Start date' %}</td>
             <td>{% trans 'End date' %}</td>
             <td>{% trans 'Expenses' %}</td>
@@ -36,6 +37,7 @@
               </a>
             </td>
             <td>{{ project.client }}</td>
+            <td>{{ project.get_payment_type_display }}</td>
             <td>{{ project.start_date }}</td>
             <td>{{ project.end_date|default_if_none:'' }}</td>
             <td>{{ project.expenses_amount|default_if_none:'0.00' }}</td>
