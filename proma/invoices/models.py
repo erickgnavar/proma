@@ -140,6 +140,26 @@ class Invoice(TimeStampedModel):
             self.tax_total = self.subtotal * (self.tax_percent / Decimal(100))
         self.total = self.subtotal + self.tax_total
 
+    @classmethod
+    def create_from_project_flat(cls, project, description, amount):
+        invoice = cls.objects.create(client=project.client, project=project)
+        invoice.items.create(
+            rate=amount,
+            units=1,
+            description=description,
+        )
+        return invoice
+
+    @classmethod
+    def create_from_project_rate(cls, project, description, rate, units):
+        invoice = cls.objects.create(client=project.client, project=project)
+        invoice.items.create(
+            rate=rate,
+            units=units,
+            description=description,
+        )
+        return invoice
+
 
 class Item(TimeStampedModel):
 

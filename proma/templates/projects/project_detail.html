@@ -5,6 +5,11 @@
     <h1 class="h2">{{ project.name }}</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
+        <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#create-invoice-modal">
+          <i class="fas fa-plus"></i>
+          {% trans 'Create invoice' %}
+        </button>
+
         <a class="btn btn-sm btn-outline-secondary" href="{% url 'projects:project-update' project.id %}">
           <i class="fas fa-edit"></i>
           {% trans 'Edit' %}
@@ -76,4 +81,54 @@
       </div>
     </div>
   </div>
+
+  <!-- Create invoice modal -->
+  <div class="modal fade" id="create-invoice-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{% trans 'Choose a type' %}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <select id="type" class="select form-control" action="">
+              <option value="flat" data-url="{% url 'projects:project-create-invoice' project.id 'flat' %}">{% trans 'Flat' %}</option>
+              <option value="rate" data-url="{% url 'projects:project-create-invoice' project.id 'rate' %}">{% trans 'Rate' %}</option>
+              <option value="percentage" data-url="{% url 'projects:project-create-invoice' project.id 'percentage' %}">{% trans 'Percentage' %}</option>
+            </select>
+          </form>
+          <br/>
+          <p>
+            <b>{% trans 'Flat' %}: </b> {% trans 'A flat amount' %}
+          </p>
+          <p>
+            <b>{% trans 'Rate' %}: </b> {% trans 'An amount based in a rate and units of time' %}
+          </p>
+          <p>
+            <b>{% trans 'Percentage' %}: </b> {% trans 'A percentage of the current project rate' %}
+            <br/>
+            <small>{% trans 'Only applicable to project with flat payment type' %}</small>
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans 'Close' %}</button>
+          <button type="button" class="btn btn-primary" id="btn-go-to-invoice-creation">
+            {% trans 'Create invoice' %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
+{% block javascript %}
+  <script>
+    $(document).ready(function () {
+      $('#btn-go-to-invoice-creation').on('click', function () {
+        document.location.href = $('#type').find('option:selected').data('url');
+      });
+    });
+  </script>
+{% endblock javascript %}

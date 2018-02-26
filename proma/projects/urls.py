@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -10,6 +10,11 @@ urlpatterns = [
     path('projects/create/', views.ProjectCreateView.as_view(), name='project-create'),
     path('projects/<int:id>/', views.ProjectDetailView.as_view(), name='project-detail'),
     path('projects/<int:id>/update/', views.ProjectUpdateView.as_view(), name='project-update'),
+    re_path(
+        r'projects/(?P<id>\d+)/create-invoice/(?P<type>(flat|rate|percentage))/',
+        views.ProjectCreateInvoiceView.as_view(),
+        name='project-create-invoice',
+    ),
 
     path('expenses/', views.ExpenseListView.as_view(), name='expense-list'),
     path('expenses/create/', views.ExpenseCreateView.as_view(), name='expense-create'),

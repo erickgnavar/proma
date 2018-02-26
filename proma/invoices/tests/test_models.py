@@ -171,6 +171,24 @@ class InvoiceTestCase(TestCase):
         with self.assertRaises(InvoiceException):
             invoice.cancel()
 
+    def test_create_from_project_flat(self):
+        self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 0)
+        invoice = Invoice.create_from_project_flat(self.project, 'test', 100)
+        self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 1)
+        item = invoice.items.first()
+        self.assertEqual(item.description, 'test')
+        self.assertEqual(item.units, 1)
+        self.assertEqual(item.rate, 100)
+
+    def test_create_from_project_rate(self):
+        self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 0)
+        invoice = Invoice.create_from_project_rate(self.project, 'test', 20, 10)
+        self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 1)
+        item = invoice.items.first()
+        self.assertEqual(item.description, 'test')
+        self.assertEqual(item.units, 10)
+        self.assertEqual(item.rate, 20)
+
 
 class ItemTestCase(TestCase):
 

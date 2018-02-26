@@ -1,8 +1,9 @@
+from django.contrib.messages.storage.fallback import FallbackStorage
 from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
 from mixer.backend.django import mixer
 
-from .. import views
+from .. import forms, views
 from ..models import Project
 
 
@@ -272,3 +273,99 @@ class ExpenseDetailViewTestCase(TestCase):
         response = self.view(request, id=self.expense.id)
         self.assertEqual(response.status_code, 200)
         self.assertIn('expense', response.context_data)
+
+
+class ProjectCreateInvoiceViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.ProjectCreateInvoiceView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.project = mixer.blend('projects.Project')
+
+    def test_match_expected_view(self):
+        url = resolve('/projects/1/create-invoice/flat/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+        url = resolve('/projects/1/create-invoice/rate/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+        url = resolve('/projects/1/create-invoice/percentage/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_flat_form(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        response = self.view(request, id=self.project.id, type='flat')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context_data)
+        self.assertIsInstance(response.context_data['form'], forms.CreateInvoiceFlatForm)
+
+    def test_load_rate_form(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        response = self.view(request, id=self.project.id, type='rate')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context_data)
+        self.assertIsInstance(response.context_data['form'], forms.CreateInvoiceRateForm)
+
+    def test_load_percentage_form(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        response = self.view(request, id=self.project.id, type='percentage')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('form', response.context_data)
+        self.assertIsInstance(response.context_data['form'], forms.CreateInvoicePercentageForm)
+
+    def test_create_invoice_flat(self):
+        request = self.factory.post('/', {
+            'description': 'test',
+            'amount': 10,
+        })
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        invoice = self.project.invoices.last()
+        self.assertIsNone(invoice)
+        response = self.view(request, id=self.project.id, type='flat')
+        self.assertEqual(response.status_code, 302)
+        invoice = self.project.invoices.last()
+        self.assertIsNotNone(invoice)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': invoice.id,
+        }))
+
+    def test_create_invoice_rate(self):
+        request = self.factory.post('/', {
+            'description': 'test',
+            'rate': 10,
+            'units': 10,
+        })
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        invoice = self.project.invoices.last()
+        self.assertIsNone(invoice)
+        response = self.view(request, id=self.project.id, type='rate')
+        self.assertEqual(response.status_code, 302)
+        invoice = self.project.invoices.last()
+        self.assertIsNotNone(invoice)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': invoice.id,
+        }))
+
+    def test_create_invoice_percentage(self):
+        request = self.factory.post('/', {
+            'description': 'test',
+            'percentage': 10,
+        })
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        invoice = self.project.invoices.last()
+        self.assertIsNone(invoice)
+        response = self.view(request, id=self.project.id, type='percentage')
+        self.assertEqual(response.status_code, 302)
+        invoice = self.project.invoices.last()
+        self.assertIsNotNone(invoice)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': invoice.id,
+        }))
