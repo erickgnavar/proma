@@ -1,11 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views.generic import (CreateView, DetailView, FormView, ListView,
                                   UpdateView)
+
+from proma.invoices.models import Invoice
 
 from . import forms
 from .models import Expense, Project
@@ -85,6 +87,8 @@ class ProjectListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.annotate(expenses_amount=Sum('expenses__amount'))
+        paid_invoice = Q(invoices__status=Invoice.PAID)
+        qs = qs.annotate(total_paid=Sum('invoices__total', filter=paid_invoice))
         return qs
 
 
