@@ -1,4 +1,5 @@
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.http import Http404
 from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
 from mixer.backend.django import mixer
@@ -214,3 +215,28 @@ class InvoiceActionViewtTestCase(TestCase):
         }))
         self.invoice.refresh_from_db()
         self.assertEqual(self.invoice.status, Invoice.CANCELLED)
+
+
+class InvoicePublicDetailViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoicePublicDetailView.as_view()
+        self.factory = RequestFactory()
+        self.invoice = mixer.blend('invoices.Invoice', status=Invoice.OPEN)
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/abc/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get('/')
+        response = self.view(request, token=self.invoice.token)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('invoice', response.context_data)
+
+    def test_raise_404_when_the_invoice_is_not_opened(self):
+        request = self.factory.get('/')
+        self.invoice.status = Invoice.DRAFT
+        self.invoice.save()
+        with self.assertRaises(Http404):
+            self.view(request, token=self.invoice.token)

@@ -51,5 +51,10 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
+        'proma.invoices.tasks': {
+            'level': 'WARNING',
+            'handlers': ['console', 'sentry'],
+            'propagate': False,
+        },
     },
 }

@@ -15,4 +15,9 @@ urlpatterns = [
         views.InvoiceActionView.as_view(),
         name='invoice-action',
     ),
+    path(
+        'invoices/<str:token>/',
+        views.InvoicePublicDetailView.as_view(),
+        name='invoice-public-detail',
+    ),
 ]

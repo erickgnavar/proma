@@ -1,0 +1,96 @@
+{% load i18n static %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'vendor/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'vendor/css/fontawesome-all.min.css' %}">
+    {% block css %}{% endblock %}
+
+    <title>Proma | #{{ invoice.number }}</title>
+
+  </head>
+  <body>
+    <br/>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h1 class="text-center">{% trans 'Invoice' %} #{{ invoice.number }}</h1>
+          <table class="table table-bordered table-striped">
+            <tbody>
+              <tr>
+                <td>{% trans 'Status' %}</td>
+                <td>{{ invoice.get_status_display }}</td>
+              </tr>
+              <tr>
+                <td>{% trans 'Project' %}</td>
+                <td>{{ invoice.project }}</td>
+              </tr>
+              <tr>
+                <td>{% trans 'Client' %}</td>
+                <td>{{ invoice.client }}</td>
+              </tr>
+              <tr>
+                <td>{% trans 'Issue date' %}</td>
+                <td>{{ invoice.issue_date }}</td>
+              </tr>
+              <tr>
+                <td>{% trans 'Due date' %}</td>
+                <td>{{ invoice.due_date }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <th>{% trans 'Description' %}</th>
+              <th class="text-right">{% trans 'Rate' %}</th>
+              <th class="text-right">{% trans 'Units' %}</th>
+              <th class="text-right">{% trans 'Total' %}</th>
+            </thead>
+            <tbody>
+              {% for item in invoice.items.all %}
+              <tr>
+                <td>{{ item.description }}</td>
+                <td class="text-right">{{ item.rate }}</td>
+                <td class="text-right">{{ item.units }}</td>
+                <td class="text-right">{{ item.total }}</td>
+              </tr>
+              {% endfor %}
+              <tr class="text-right">
+                <td colspan="3" class="text-right">
+                  {% trans 'Subtotal' %}
+                </td>
+                <td>
+                  {{ invoice.subtotal }}
+                </td>
+              </tr>
+              <tr class="text-right">
+                <td colspan="3" class="text-right">
+                  {% trans 'Taxes' %} {{ invoice.tax_percent|default_if_none:'0.00' }} %
+                </td>
+                <td>
+                  {{ invoice.tax_total }}
+                </td>
+              </tr>
+              <tr class="text-right">
+                <td colspan="3">
+                  {% trans 'Total' %}
+                </td>
+                <td>
+                  {{ invoice.total }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

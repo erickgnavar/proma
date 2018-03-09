@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import (CreateView, DetailView, ListView,
                                   RedirectView, UpdateView)
 
+from . import tasks
 from .exceptions import InvoiceException
 from .forms import InvoiceForm, ItemsFormset
 from .models import Invoice
@@ -108,6 +109,7 @@ class InvoiceActionView(LoginRequiredMixin, RedirectView):
             try:
                 self.invoice.open()
                 self.invoice.save()
+                tasks.notify_open_invoice.delay(self.invoice.id)
                 messages.success(self.request, _('Invoice opened!'))
             except InvoiceException as ex:
                 messages.error(self.request, str(ex))
@@ -121,3 +123,13 @@ class InvoiceActionView(LoginRequiredMixin, RedirectView):
         return reverse('invoices:invoice-detail', kwargs={
             'id': self.invoice.id,
         })
+
+
+class InvoicePublicDetailView(DetailView):
+
+    template_name = 'invoices/invoice_public_detail.html'
+    model = Invoice
+    context_object_name = 'invoice'
+
+    def get_object(self):
+        return get_object_or_404(Invoice, token=self.kwargs.get('token'), status=Invoice.OPEN)

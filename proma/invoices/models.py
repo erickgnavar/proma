@@ -74,6 +74,8 @@ class Invoice(TimeStampedModel):
 
     notes = models.TextField(_('Notes'), blank=True, null=True)
 
+    token = models.CharField(max_length=64, default=secrets.token_hex, unique=True, editable=False)
+
     objects = InvoiceQuerySet.as_manager()
 
     class Meta:

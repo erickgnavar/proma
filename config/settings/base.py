@@ -154,6 +154,13 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+DOMAIN = os.environ.get('DOMAIN')
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_URL = '/login'
@@ -163,3 +170,5 @@ LOGOUT_REDIRECT_URL = '/'
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',  # used to play nice with bootstrap4 styles
 }
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')

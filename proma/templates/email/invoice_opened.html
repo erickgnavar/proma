@@ -1,0 +1,10 @@
+{% extends 'email/base.html' %}
+{% load i18n %}
+{% block content %}
+  <p>{% trans 'Hi' %} {{ invoice.client.name }}</p>
+  <p>{% trans 'You have a pending invoice.' %}</p>
+  <p>{% trans 'To see more details go to the below link:' %}</p>
+  <p>
+    <a href="{{ url }}">#{{ invoice.number }}</a>
+  </p>
+{% endblock content %}
