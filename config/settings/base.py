@@ -50,6 +50,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'proma.common',
+    'proma.config',
     'proma.users',
     'proma.clients',
     'proma.projects',

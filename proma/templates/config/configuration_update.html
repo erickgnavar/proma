@@ -1,0 +1,39 @@
+
+{% extends 'base.html' %}
+{% load i18n form_tags %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{% trans 'Settings' %}</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-12">
+            <h3>{% trans 'Company information' %}</h3>
+          </div>
+          <div class="col-md-6">
+            {% field form.company_legal_name %}
+            {% field form.company_email %}
+            {% field form.company_phone %}
+            {% field form.company_tax_identifier %}
+            {% field form.company_logo %}
+          </div>
+          <div class="col-md-6">
+            {% field form.company_address %}
+            {% field form.company_city %}
+            {% field form.company_state %}
+            {% field form.company_zipcode %}
+            {% field form.company_country %}
+          </div>
+        </div>
+        <button class="btn btn-outline-primary" type="submit">
+          <i class="fas fa-save"></i>
+          {% trans 'Save' %}
+        </button>
+      </form>
+    </div>
+  </div>
+{% endblock content %}

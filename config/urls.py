@@ -27,5 +27,6 @@ urlpatterns = [
     path('', include('proma.clients.urls', namespace='clients')),
     path('', include('proma.projects.urls', namespace='projects')),
     path('', include('proma.invoices.urls', namespace='invoices')),
+    path('', include('proma.config.urls', namespace='config')),
     path('', HomeView.as_view(), name='home'),
 ]
