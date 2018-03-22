@@ -1,3 +1,18 @@
-{% load crispy_forms_tags %}
+{% load form_tags i18n %}
 {% csrf_token %}
-{{ form|crispy }}
+<div class="row">
+  <div class="col-md-6">
+    {% field form.name %}
+    {% field form.email %}
+    {% field form.phone %}
+    {% field form.alias %}
+    {% field form.tax_identifier %}
+  </div>
+  <div class="col-md-6">
+    {% field form.address %}
+    {% field form.city %}
+    {% field form.state %}
+    {% field form.zipcode %}
+    {% field form.country %}
+  </div>
+</div>

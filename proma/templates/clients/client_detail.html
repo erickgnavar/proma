@@ -28,8 +28,40 @@
             </td>
           </tr>
           <tr>
+            <td>{% trans 'Phone' %}</td>
+            <td>
+              {% if client.phone %}
+              <a href="tel:{{ client.phone }}">{{ client.phone }}</a>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
             <td>{% trans 'Tax Identifier' %}</td>
             <td>{{ client.tax_identifier|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Alias' %}</td>
+            <td>{{ client.alias|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Address' %}</td>
+            <td>{{ client.address|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'City' %}</td>
+            <td>{{ client.city|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'State' %}</td>
+            <td>{{ client.state|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Zipcode' %}</td>
+            <td>{{ client.zipcode|default_if_none:'' }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Country' %}</td>
+            <td>{{ client.country|default_if_none:'' }}</td>
           </tr>
         </tbody>
       </table>

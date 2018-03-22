@@ -27,6 +27,7 @@ class ClientCreateViewTestCase(TestCase):
         data = {
             'name': 'test',
             'email': 'email@email.com',
+            'alias': 'test',
         }
         request = self.factory.post('/', data=data)
         request.user = self.user
@@ -68,6 +69,7 @@ class ClientUpdateViewTestCase(TestCase):
         data = {
             'name': 'test',
             'email': 'email@email.com',
+            'alias': 'test',
         }
         request = self.factory.post('/', data=data)
         request.user = self.user
