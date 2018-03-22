@@ -69,7 +69,6 @@ class PDFView(View):
             'margin-left': '0.75in',
             'encoding': 'UTF-8',
             'quiet': '',
-            'zoom': 3.5,
         }
         return pdfkit.from_string(content, False, options=options)
 
