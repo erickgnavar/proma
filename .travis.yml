@@ -2,8 +2,11 @@ language: python
 
 python: "3.6"
 
+sudo: required
+
 install:
   - pip install -r requirements/test.txt
+  - sh ./travis/before_script.sh
 
 before_script:
   - export DJANGO_SETTINGS_MODULE="config.settings.test"

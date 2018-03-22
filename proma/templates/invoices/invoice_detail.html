@@ -18,6 +18,11 @@
           <i class="fas fa-ban"></i> {% trans 'Cancel' %}
         </a>
         {% endif %}
+        {% if invoice.status != invoice.DRAFT %}
+        <a class="btn btn-sm btn-outline-info" href="{% url 'invoices:invoice-download-pdf' invoice.id %}">
+          <i class="fas fa-file-pdf"></i> {% trans 'Download PDF' %}
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>

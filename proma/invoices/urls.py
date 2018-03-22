@@ -20,4 +20,5 @@ urlpatterns = [
         views.InvoicePublicDetailView.as_view(),
         name='invoice-public-detail',
     ),
+    path('invoices/<int:id>/download-pdf/', views.InvoiceDownloadPDFView.as_view(), name='invoice-download-pdf'),
 ]

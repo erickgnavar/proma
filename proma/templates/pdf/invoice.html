@@ -1,0 +1,173 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{% trans 'Invoice' %} {{ invoice.number }}</title>
+    <style>
+      {{ bootstrap_styles|safe }}
+      h1, h2, h3, h4, p, span, div { font-family: DejaVu Sans; }
+    </style>
+  </head>
+  <body>
+    <div style="clear:both; position:relative;">
+      <div style="position:absolute; left:0pt; width:250pt;">
+        {% if logo_path %}
+        <img class="rounded" style="max-width:250pt;max-height:100pt" src="file://{{ logo_path }}">
+        {% endif %}
+      </div>
+      <div style="margin-left:300pt;">
+        <b>{% trans 'Due date' %}: </b> {{ invoice.due_date }}<br />
+        <b>{% trans 'Invoice' %}: </b> #{{ invoice.number }}
+        <br />
+      </div>
+    </div>
+    <br />
+    <br />
+    {% if logo_path %}
+    <br />
+    <br />
+    {% endif %}
+    <div style="clear:both; position:relative;">
+      <div style="position:absolute; left:0pt; width:250pt;">
+        <h4>{% trans 'Business Details' %}:</h4>
+        <div class="card">
+          <div class="card-body">
+            <b>{{ company.legal_name }}</b>
+            <br/>
+            {% if company.address %}
+            {{ company.address }}
+            {% endif %}
+            <br/>
+            {% if company.city %}
+            {{ company.city }}
+            {% endif %}
+            <br/>
+            {% if company.state %}
+            {{ company.state }}
+            {% endif %}
+            <br/>
+            {% if company.zipcode %}
+            {{ company.zipcode }}
+            {% endif %}
+            <br/>
+            {% if company.country %}
+            {{ company.country }}
+            {% endif %}
+            <br/>
+            {% if company.phone %}
+            {{ company.phone }}
+            {% endif %}
+            <br/>
+            {% if company.email %}
+            {{ company.email }}
+            {% endif %}
+            <br/>
+          </div>
+        </div>
+      </div>
+      <div style="margin-left: 300pt;">
+        <h4>{% trans 'Customer Details' %}:</h4>
+        <div class="card">
+          <div class="card-body">
+            <b>{{ invoice.client.name }}</b>
+            <br/>
+            {% if invoice.client.address %}
+            {{ invoice.client.address }}
+            {% endif %}
+            <br/>
+            {% if invoice.client.city %}
+            {{ invoice.client.city }}
+            {% endif %}
+            <br/>
+            {% if invoice.client.state %}
+            {{ invoice.client.state }}
+            {% endif %}
+            <br/>
+            {% if invoice.client.zipcode %}
+            {{ invoice.client.zipcode }}
+            {% endif %}
+            <br/>
+            {% if invoice.client.country %}
+            {{ invoice.client.country }}
+            {% endif %}
+            <br/>
+            {% if invoice.client.phone %}
+            {{ invoice.client.phone }}
+            {% endif %}
+            <br/>
+            {% if invoice.client.email %}
+            {{ invoice.client.email }}
+            {% endif %}
+            <br/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br/>
+    <h4>{% trans 'Items' %}:</h4>
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{% trans 'Description' %}</th>
+          <th class="text-right">{% trans 'Quantity' %}</th>
+          <th class="text-right">{% trans 'Unit price' %} ({{ currency }})</th>
+          <th class="text-right">{% trans 'Total' %} ({{ currency }})</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in invoice.items.all %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ item.description }}</td>
+          <td class="text-right">{{ item.units }}</td>
+          <td class="text-right">{{ item.rate }}</td>
+          <td class="text-right">{{ item.total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="clear:both; position:relative;">
+      {% if invoice.notes %}
+      <div style="position:absolute; left:0pt; width:250pt;">
+        <h4>{% trans 'Notes' %}:</h4>
+        <div class="card">
+          <div class="card-body">
+            {{ invoice.notes }}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      <div style="margin-left: 300pt;">
+        <h4>{% trans 'Total' %}:</h4>
+        <table class="table table-bordered table-sm">
+          <tbody>
+            <tr>
+              <td><b>{% trans 'Subtotal' %} ({{ currency }})</b></td>
+              <td class="text-right">
+                {{ invoice.subtotal }}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <b>
+                  {% trans 'Taxes' %} ({{ currency }})
+                </b>
+              </td>
+              <td class="text-right">
+                {{ invoice.tax_total }}
+              </td>
+            </tr>
+            <tr>
+              <td><b>{% trans 'TOTAL' %} ({{ currency }})</b></td>
+              <td class="text-right">
+                <b>{{ invoice.total }}</b>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

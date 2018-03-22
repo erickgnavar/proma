@@ -6,3 +6,4 @@ python-dateutil==2.6.1
 celery==4.1.0
 redis==2.10.6
 Pillow==5.0.0
+pdfkit==0.6.1
