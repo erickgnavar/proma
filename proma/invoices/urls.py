@@ -21,4 +21,5 @@ urlpatterns = [
         name='invoice-public-detail',
     ),
     path('invoices/<int:id>/download-pdf/', views.InvoiceDownloadPDFView.as_view(), name='invoice-download-pdf'),
+    path('invoices/<int:id>/resend-email/', views.InvoiceResendEmailView.as_view(), name='invoice-resend-email'),
 ]

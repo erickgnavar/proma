@@ -17,6 +17,9 @@
         <a class="btn btn-sm btn-outline-danger" href="{% url 'invoices:invoice-action' invoice.id 'cancel' %}">
           <i class="fas fa-ban"></i> {% trans 'Cancel' %}
         </a>
+        <a class="btn btn-sm btn-outline-info" href="{% url 'invoices:invoice-resend-email' invoice.id %}">
+          <i class="fas fa-paper-plane"></i> {% trans 'Resend email' %}
+        </a>
         {% endif %}
         {% if invoice.status != invoice.DRAFT %}
         <a class="btn btn-sm btn-outline-info" href="{% url 'invoices:invoice-download-pdf' invoice.id %}">

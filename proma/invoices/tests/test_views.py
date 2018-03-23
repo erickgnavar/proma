@@ -1,4 +1,5 @@
 from django.contrib.messages.storage.fallback import FallbackStorage
+from django.core import mail
 from django.http import Http404
 from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
@@ -193,7 +194,9 @@ class InvoiceActionViewtTestCase(TestCase):
         request.session = {}
         request._messages = FallbackStorage(request)
         self.assertEqual(self.invoice.status, Invoice.DRAFT)
+        self.assertEqual(len(mail.outbox), 0)
         response = self.view(request, id=self.invoice.id, action='open')
+        self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
             'id': self.invoice.id,
@@ -262,7 +265,45 @@ class InvoiceDownloadPDFViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/pdf')
 
+    def test_raise_404_when_the_invoice_is_a_draft(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        self.invoice.status = Invoice.DRAFT
+        self.invoice.save()
+        with self.assertRaises(Http404):
+            self.view(request, id=self.invoice.id)
+
+
+class InvoiceResendEmailViewTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceResendEmailView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.invoice = mixer.blend('invoices.Invoice', status=Invoice.OPEN)
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/1/resend-email/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get('/')
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(response.status_code, 302)
+        redirect_url = reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        })
+        self.assertEqual(response['location'], redirect_url)
+
     def test_raise_404_when_the_invoice_is_not_opened(self):
         request = self.factory.get('/')
+        request.user = self.user
+        self.invoice.status = Invoice.DRAFT
+        self.invoice.save()
         with self.assertRaises(Http404):
-            self.view(request, id=-1)
+            self.view(request, id=self.invoice.id)

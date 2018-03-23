@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
@@ -108,7 +109,7 @@ class InvoiceDownloadPDFView(LoginRequiredMixin, PDFView):
     report_class = InvoicePDF
 
     def dispatch(self, request, *args, **kwargs):
-        self.invoice = get_object_or_404(Invoice, id=kwargs.get('id'))
+        self.invoice = get_object_or_404(Invoice, ~Q(status=Invoice.DRAFT), id=kwargs.get('id'))
         return super().dispatch(request, *args, **kwargs)
 
     def get_report_kwargs(self):
@@ -153,3 +154,17 @@ class InvoicePublicDetailView(DetailView):
 
     def get_object(self):
         return get_object_or_404(Invoice, token=self.kwargs.get('token'), status=Invoice.OPEN)
+
+
+class InvoiceResendEmailView(LoginRequiredMixin, RedirectView):
+
+    def dispatch(self, request, *args, **kwargs):
+        self.invoice = get_object_or_404(Invoice, status=Invoice.OPEN, id=kwargs.get('id'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self, **kwargs):
+        tasks.notify_open_invoice.delay(self.invoice.id)
+        messages.success(self.request, _('Email sent!'))
+        return reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        })
