@@ -59,7 +59,11 @@
     </div>
 
     <div class="col-md-6">
-      <h2>{% trans 'Expenses' %}</h2>
+      <h2>
+        <a href="{% url 'projects:expense-list' %}?project={{ project.id }}">
+          {% trans 'Expenses' %}
+        </a>
+      </h2>
       <div class="list-group">
         {% for expense in project.expenses.all %}
         <a class="list-group-item list-group-item-action" href="{% url 'projects:expense-detail' expense.id %}">
@@ -69,7 +73,11 @@
         {% endfor %}
       </div>
       <hr/>
-      <h2>{% trans 'Invoices' %}</h2>
+      <h2>
+        <a href="{% url 'invoices:invoice-list' %}?project={{ project.id }}">
+          {% trans 'Invoices' %}
+        </a>
+      </h2>
       <div class="list-group">
         {% for invoice in project.invoices.non_draft %}
         <a class="list-group-item list-group-item-action" href="{% url 'invoices:invoice-detail' invoice.id %}">
