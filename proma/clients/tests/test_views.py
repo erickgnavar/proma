@@ -109,6 +109,7 @@ class ClientListViewTestCase(TestCase):
         response = self.view(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('clients', response.context_data)
+        self.assertIn('filter', response.context_data)
         self.assertEqual(response.context_data['clients'].count(), 5)
 
 

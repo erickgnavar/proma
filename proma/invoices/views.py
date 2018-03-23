@@ -4,12 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import (CreateView, DetailView, ListView,
-                                  RedirectView, UpdateView)
+from django.views.generic import (CreateView, DetailView, RedirectView,
+                                  UpdateView)
+from django_filters.views import FilterView
 
 from proma.common.utils import PDFView
 
-from . import tasks
+from . import filters, tasks
 from .exceptions import InvoiceException
 from .forms import InvoiceForm, ItemsFormset
 from .models import Invoice
@@ -85,12 +86,13 @@ class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
         })
 
 
-class InvoiceListView(LoginRequiredMixin, ListView):
+class InvoiceListView(LoginRequiredMixin, FilterView):
 
     template_name = 'invoices/invoice_list.html'
     model = Invoice
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'invoices'
+    filterset_class = filters.InvoiceFilter
 
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):

@@ -148,6 +148,7 @@ class InvoiceListViewTestCase(TestCase):
         response = self.view(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('invoices', response.context_data)
+        self.assertIn('filter', response.context_data)
         self.assertEqual(response.context_data['invoices'].count(), 5)
 
 

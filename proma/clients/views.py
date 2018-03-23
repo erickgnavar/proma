@@ -1,8 +1,10 @@
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, UpdateView
+from django_filters.views import FilterView
 
+from . import filters
 from .forms import ClientForm
 from .models import Client
 
@@ -29,12 +31,13 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
         })
 
 
-class ClientListView(LoginRequiredMixin, ListView):
+class ClientListView(LoginRequiredMixin, FilterView):
 
     template_name = 'clients/client_list.html'
     model = Client
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'clients'
+    filterset_class = filters.ClientFilter
 
 
 class ClientDetailView(LoginRequiredMixin, DetailView):

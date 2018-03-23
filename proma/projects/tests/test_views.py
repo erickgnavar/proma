@@ -120,6 +120,7 @@ class ProjectListViewTestCase(TestCase):
         response = self.view(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('projects', response.context_data)
+        self.assertIn('filter', response.context_data)
         self.assertEqual(response.context_data['projects'].count(), 5)
 
 
@@ -252,6 +253,7 @@ class ExpenseListViewTestCase(TestCase):
         response = self.view(request)
         self.assertEqual(response.status_code, 200)
         self.assertIn('expenses', response.context_data)
+        self.assertIn('filter', response.context_data)
         self.assertEqual(response.context_data['expenses'].count(), 5)
 
 

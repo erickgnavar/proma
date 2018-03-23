@@ -5,12 +5,12 @@ from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import (CreateView, DetailView, FormView, ListView,
-                                  UpdateView)
+from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django_filters.views import FilterView
 
 from proma.invoices.models import Invoice
 
-from . import forms
+from . import filters, forms
 from .models import Expense, Project
 
 
@@ -78,12 +78,13 @@ class ProjectCreateInvoiceView(LoginRequiredMixin, FormView):
         })
 
 
-class ProjectListView(LoginRequiredMixin, ListView):
+class ProjectListView(LoginRequiredMixin, FilterView):
 
     template_name = 'projects/project_list.html'
     model = Project
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'projects'
+    filterset_class = filters.ProjectFilter
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -123,12 +124,13 @@ class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
         })
 
 
-class ExpenseListView(LoginRequiredMixin, ListView):
+class ExpenseListView(LoginRequiredMixin, FilterView):
 
     template_name = 'projects/expense_list.html'
     model = Expense
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'expenses'
+    filterset_class = filters.ExpenseFilter
 
 
 class ExpenseDetailView(LoginRequiredMixin, DetailView):

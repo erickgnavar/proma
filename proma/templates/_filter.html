@@ -1,0 +1,25 @@
+{% load i18n crispy_forms_tags %}
+<style>
+  .filter-form .form-group {
+    margin-right: 10px;
+    padding-bottom: 5px;
+  }
+  .filter-form .form-control {
+    margin-left: 10px;
+  }
+  .filter-form button {
+    margin-bottom: 5px;
+  }
+</style>
+<div class="row">
+  <div class="col-md-12">
+    <form class="form-inline filter-form">
+      {% crispy filter.form filter.helper %}
+      <button class="btn btn-outline-secondary" type="submit">
+        <i class="fas fa-search"></i>
+        {% trans 'Filter' %}
+      </button>
+    </form>
+  </div>
+</div>
+<br/>
