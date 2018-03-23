@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
@@ -88,7 +89,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
 
     template_name = 'invoices/invoice_list.html'
     model = Invoice
-    paginate_by = 20
+    paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'invoices'
 
 

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
@@ -32,7 +33,7 @@ class ClientListView(LoginRequiredMixin, ListView):
 
     template_name = 'clients/client_list.html'
     model = Client
-    paginate_by = 20
+    paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'clients'
 
 

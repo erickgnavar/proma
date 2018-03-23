@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Sum
@@ -81,7 +82,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
     template_name = 'projects/project_list.html'
     model = Project
-    paginate_by = 20
+    paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'projects'
 
     def get_queryset(self):
@@ -126,7 +127,7 @@ class ExpenseListView(LoginRequiredMixin, ListView):
 
     template_name = 'projects/expense_list.html'
     model = Expense
-    paginate_by = 20
+    paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
     context_object_name = 'expenses'
 
 

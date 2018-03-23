@@ -155,6 +155,8 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+PAGINATION_DEFAULT_PAGE_SIZE = os.environ.get('PAGINATION_DEFAULT_PAGE_SIZE', 10)
+
 DOMAIN = os.environ.get('DOMAIN')
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
