@@ -28,6 +28,7 @@ class Email(object):
         from_email = kwargs.get('from_email', settings.DEFAULT_FROM_EMAIL)
         to = kwargs.get('to')
         body = kwargs.get('body', '')
+        attachments = kwargs.get('attachments', [])
 
         plain = kwargs.get('plain', False)
 
@@ -37,30 +38,24 @@ class Email(object):
             context = kwargs.get('context', {})
             template = loader.get_template(kwargs.get('template_name'))
             html_content = template.render(context)
-            message = EmailMultiAlternatives(subject, body, from_email, to)
-            message.attach_alternative(html_content, 'text/html')
+            message = EmailMultiAlternatives(subject, html_content, from_email, to, attachments=attachments)
+            message.content_subtype = 'html'
         message.send(fail_silently=not settings.DEBUG)
 
 
-class PDFView(View):
+class PDFReport:
     """
-    Create a PDF response using pdfkit
+    Abstract Report class, usde pdfkit to render html into pdf files
     """
 
     template_name = None
     bootstrap_styles = False
 
-    def get(self, request, *args, **kwargs):
-        content = self._render(self.get_context_data())
-        filename = self.get_filename()
-        response = HttpResponse(content, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename={filename}'
-        return response
-
-    def _render(self, context):
+    def render(self):
+        context = self.get_context()
         context.update(self._get_default_context())
         template = loader.get_template(self.template_name)
-        content = template.render(context)
+        content = template.render((context))
         options = {
             'page-size': 'Letter',
             'margin-top': '0.75in',
@@ -82,8 +77,26 @@ class PDFView(View):
                 })
         return context
 
-    def get_context_data(self):
+    def get_filename(self):
         raise NotImplementedError
 
-    def get_filename(self):
+    def get_context(self):
+        raise NotImplementedError
+
+
+class PDFView(View):
+    """
+    Create a PDF response using PDFReport
+    """
+
+    report_class = None
+
+    def get(self, request, *args, **kwargs):
+        report = self.report_class(**self.get_report_kwargs())
+        assert isinstance(report, PDFReport), 'The report must be an instance of PDFReport'
+        response = HttpResponse(report.render(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename={report.get_filename()}'
+        return response
+
+    def get_report_kwargs(self):
         raise NotImplementedError

@@ -7,12 +7,12 @@ from django.views.generic import (CreateView, DetailView, ListView,
                                   RedirectView, UpdateView)
 
 from proma.common.utils import PDFView
-from proma.config.models import Configuration
 
 from . import tasks
 from .exceptions import InvoiceException
 from .forms import InvoiceForm, ItemsFormset
 from .models import Invoice
+from .reports import InvoicePDF
 
 
 class InvoiceCreateView(LoginRequiredMixin, CreateView):
@@ -102,23 +102,15 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
 
 class InvoiceDownloadPDFView(LoginRequiredMixin, PDFView):
 
-    template_name = 'pdf/invoice.html'
-    bootstrap_styles = True
+    report_class = InvoicePDF
 
     def dispatch(self, request, *args, **kwargs):
         self.invoice = get_object_or_404(Invoice, id=kwargs.get('id'))
         return super().dispatch(request, *args, **kwargs)
 
-    def get_filename(self):
-        return f'{self.invoice.number}.pdf'
-
-    def get_context_data(self):
-        config = Configuration.get_instance()
+    def get_report_kwargs(self):
         return {
-            'invoice': self.invoice,
-            'currency': self.invoice.project.currency,
-            'company': config.get_info('company'),
-            'logo_path': config.get_company_logo_path(),
+            'invoice': self.invoice
         }
 
 
