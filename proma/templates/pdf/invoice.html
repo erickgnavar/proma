@@ -17,6 +17,7 @@
         {% endif %}
       </div>
       <div style="margin-left:300pt;">
+        <b>{% trans 'Issue date' %}: </b> {{ invoice.issue_date }}<br />
         <b>{% trans 'Due date' %}: </b> {{ invoice.due_date }}<br />
         <b>{% trans 'Invoice' %}: </b> #{{ invoice.number }}
         <br />
@@ -71,6 +72,9 @@
         <div class="card">
           <div class="card-body">
             <b>{{ invoice.client.name }}</b>
+            {% if invoice.client.tax_identifier %}
+            {{ invoice.client.tax_identifier }}
+            {% endif %}
             <br/>
             {% if invoice.client.address %}
             {{ invoice.client.address }}
