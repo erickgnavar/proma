@@ -150,6 +150,8 @@ class Invoice(TimeStampedModel):
             units=1,
             description=description,
         )
+        invoice.compute_amounts()
+        invoice.save()
         return invoice
 
     @classmethod
@@ -160,6 +162,8 @@ class Invoice(TimeStampedModel):
             units=units,
             description=description,
         )
+        invoice.compute_amounts()
+        invoice.save()
         return invoice
 
 

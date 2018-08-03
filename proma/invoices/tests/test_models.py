@@ -179,6 +179,7 @@ class InvoiceTestCase(TestCase):
         self.assertEqual(item.description, 'test')
         self.assertEqual(item.units, 1)
         self.assertEqual(item.rate, 100)
+        self.assertEqual(invoice.total, 100)
 
     def test_create_from_project_rate(self):
         self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 0)
@@ -188,6 +189,7 @@ class InvoiceTestCase(TestCase):
         self.assertEqual(item.description, 'test')
         self.assertEqual(item.units, 10)
         self.assertEqual(item.rate, 20)
+        self.assertEqual(invoice.total, 200)
 
 
 class ItemTestCase(TestCase):
