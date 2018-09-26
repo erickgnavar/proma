@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load form_tags i18n %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ invoice }}</h1>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-md-3">
+            {% field form.payment_notes %}
+          </div>
+        </div>
+        <button class="btn btn-outline-primary" type="submit">
+          <i class="fas fa-save"></i>
+          {% trans 'Save' %}
+        </button>
+        <a class="btn btn-outline-secondary" href="{% url 'invoices:invoice-detail' invoice.id %}">
+          {% trans 'Cancel' %}
+        </a>
+      </form>
+    </div>
+  </div>
+{% endblock content %}

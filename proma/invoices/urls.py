@@ -15,6 +15,11 @@ urlpatterns = [
         views.InvoiceActionView.as_view(),
         name='invoice-action',
     ),
+    re_path(
+        r'invoices/(?P<id>\d+)/action/pay/',
+        views.InvoiceActionPayView.as_view(),
+        name='invoice-action-pay',
+    ),
     path(
         'invoices/<str:token>/',
         views.InvoicePublicDetailView.as_view(),

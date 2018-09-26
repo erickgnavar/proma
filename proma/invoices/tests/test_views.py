@@ -221,6 +221,58 @@ class InvoiceActionViewtTestCase(TestCase):
         self.assertEqual(self.invoice.status, Invoice.CANCELLED)
 
 
+class InvoiceActionPayViewtTestCase(TestCase):
+
+    def setUp(self):
+        self.view = views.InvoiceActionPayView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend('users.User')
+        self.invoice = mixer.blend('invoices.Invoice', status=Invoice.OPEN)
+
+    def test_match_expected_view(self):
+        url = resolve('/invoices/1/action/pay/')
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_pay_successful(self):
+        request = self.factory.post('/', {
+            'payment_notes': 'payment notes',
+        })
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        self.assertEqual(self.invoice.status, Invoice.OPEN)
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], reverse('invoices:invoice-detail', kwargs={
+            'id': self.invoice.id,
+        }))
+        self.invoice.refresh_from_db()
+        self.assertEqual(self.invoice.status, Invoice.PAID)
+
+    def test_invoice_missing_fields(self):
+        data = {}
+        request = self.factory.post('/', data=data)
+        request.user = self.user
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.context_data['form'].errors) > 0)
+
+    def test_raise_404_when_the_invoice_is_not_opened(self):
+        request = self.factory.post('/')
+        request.user = self.user
+        self.invoice.status = Invoice.DRAFT
+        self.invoice.save()
+        with self.assertRaises(Http404):
+            self.view(request, id=self.invoice.id)
+
+        request = self.factory.post('/')
+        request.user = self.user
+        self.invoice.status = Invoice.CANCELLED
+        self.invoice.save()
+        with self.assertRaises(Http404):
+            self.view(request, id=self.invoice.id)
+
+
 class InvoicePublicDetailViewTestCase(TestCase):
 
     def setUp(self):

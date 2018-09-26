@@ -38,3 +38,22 @@ class ItemForm(forms.ModelForm):
 
 
 ItemsFormset = inlineformset_factory(Invoice, Item, ItemForm, extra=0)
+
+
+class PayInvoiceForm(forms.ModelForm):
+
+    class Meta:
+        model = Invoice
+        fields = (
+            'payment_notes',
+        )
+        widgets = {
+            'payment_notes': forms.Textarea(attrs={
+                'cols': 30,
+                'rows': 3,
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['payment_notes'].required = True

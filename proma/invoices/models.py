@@ -73,6 +73,7 @@ class Invoice(TimeStampedModel):
     )
 
     notes = models.TextField(_('Notes'), blank=True, null=True)
+    payment_notes = models.TextField(_('Payment notes'), blank=True, null=True)
 
     token = models.CharField(max_length=64, default=secrets.token_hex, unique=True, editable=False)
 
@@ -99,10 +100,12 @@ class Invoice(TimeStampedModel):
         self.status = self.OPEN
         self._compute_number()
 
-    def pay(self):
+    def pay(self, notes=None):
         if self.status != self.OPEN:
             raise InvoiceException('Invalid status')
         self.payment_date = timezone.now()
+        if notes is not None:
+            self.payment_notes = notes
         self.status = self.PAID
 
     def cancel(self):

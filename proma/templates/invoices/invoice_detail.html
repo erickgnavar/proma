@@ -26,6 +26,11 @@
           <i class="fas fa-file-pdf"></i> {% trans 'Download PDF' %}
         </a>
         {% endif %}
+        {% if invoice.status == invoice.OPEN %}
+        <a class="btn btn-sm btn-outline-info" href="{% url 'invoices:invoice-action-pay' invoice.id %}">
+          <i class="fas fa-dollar-sign"></i> {% trans 'Pay' %}
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -78,6 +83,10 @@
           <tr>
             <td>{% trans 'Payment date' %}</td>
             <td>{{ invoice.payment_date }}</td>
+          </tr>
+          <tr>
+            <td>{% trans 'Payment notes' %}</td>
+            <td>{{ invoice.payment_notes }}</td>
           </tr>
           {% endif %}
           <tr>

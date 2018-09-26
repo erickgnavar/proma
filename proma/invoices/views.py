@@ -5,15 +5,14 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import (CreateView, DetailView, RedirectView,
-                                  UpdateView)
+from django.views.generic import CreateView, DetailView, RedirectView, UpdateView
 from django_filters.views import FilterView
 
 from proma.common.utils import PDFView
 
 from . import filters, tasks
 from .exceptions import InvoiceException
-from .forms import InvoiceForm, ItemsFormset
+from .forms import InvoiceForm, ItemsFormset, PayInvoiceForm
 from .models import Invoice
 from .reports import InvoicePDF
 
@@ -144,6 +143,28 @@ class InvoiceActionView(LoginRequiredMixin, RedirectView):
         return reverse('invoices:invoice-detail', kwargs={
             'id': self.invoice.id,
         })
+
+
+class InvoiceActionPayView(LoginRequiredMixin, UpdateView):
+
+    model = Invoice
+    template_name = 'invoices/pay.html'
+    pk_url_kwarg = 'id'
+    form_class = PayInvoiceForm
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(status=Invoice.OPEN)
+        return qs
+
+    def form_valid(self, form):
+        invoice = form.save()
+        invoice.pay(notes=form.cleaned_data['payment_notes'])
+        messages.success(self.request, _('Invoice Paid!'))
+        return super().form_valid(form)
+
+    def get_success_url(self, **kwargs):
+        return reverse('invoices:invoice-detail', kwargs={'id': self.object.id})
 
 
 class InvoicePublicDetailView(DetailView):
