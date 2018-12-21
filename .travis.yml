@@ -12,9 +12,7 @@ install:
 before_script:
   - export DJANGO_SETTINGS_MODULE="config.settings.test"
   - export SECRET_KEY="secret"
-  - export DB_NAME="proma_test"
-  - export DB_USER="postgres"
-  - export DB_PASSWORD=""
+  - export DATABASE_URL=postgres://postgres:@localhost:5432/proma_test
 
 script:
   - poetry run black --check .
