@@ -5,7 +5,8 @@ python: "3.6"
 sudo: required
 
 install:
-  - pip install -r requirements/test.txt
+  - pip install poetry
+  - poetry install
   - sh ./travis/before_script.sh
 
 before_script:
@@ -16,8 +17,8 @@ before_script:
   - export DB_PASSWORD=""
 
 script:
-  - make lint
-  - make test
+  - poetry run flake8 .
+  - poetry run pytest
 
 services:
   - postgresql

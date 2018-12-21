@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "proma"
+version = "0.1.0"
+description = "A simple tool to manage freelance projects"
+authors = ["Erick Navarro <erick@navarro.io>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+psycopg2-binary = "^2.7"
+django-crispy-forms = "^1.7"
+django-model-utils = "^3.1"
+python-dateutil = "^2.7"
+celery = "^4.2"
+redis = "=2.10.6"
+pillow = "^5.3"
+pdfkit = "^0.6.1"
+gunicorn = "^19.9"
+raven = "^6.10"
+django-filter = "=1.1.0"
+django = "=2.0.9"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.6"
+pep8-naming = "^0.7.0"
+mixer = "^6.1"
+pytest-coverage = "^0.0.0"
+pytest-django = "^3.4"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
