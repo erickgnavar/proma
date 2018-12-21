@@ -16,55 +16,49 @@ from .models import Expense, Project
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
 
-    template_name = 'projects/project_create.html'
+    template_name = "projects/project_create.html"
     model = Project
     form_class = forms.ProjectForm
-    success_url = reverse_lazy('projects:project-list')
+    success_url = reverse_lazy("projects:project-list")
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
-    template_name = 'projects/project_update.html'
+    template_name = "projects/project_update.html"
     model = Project
-    context_object_name = 'project'
+    context_object_name = "project"
     form_class = forms.ProjectForm
-    pk_url_kwarg = 'id'
+    pk_url_kwarg = "id"
 
     def get_success_url(self):
-        return reverse('projects:project-detail', kwargs={
-            'id': self.object.id,
-        })
+        return reverse("projects:project-detail", kwargs={"id": self.object.id})
 
 
 class ProjectCreateInvoiceView(LoginRequiredMixin, FormView):
 
-    template_name = 'projects/project_create_invoice.html'
+    template_name = "projects/project_create_invoice.html"
 
     def dispatch(self, request, *args, **kwargs):
-        self.project = get_object_or_404(Project, id=kwargs.get('id'))
+        self.project = get_object_or_404(Project, id=kwargs.get("id"))
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_class(self):
         # the possible values of type are validated in the url regex
         form_class = {
-            'flat': forms.CreateInvoiceFlatForm,
-            'rate': forms.CreateInvoiceRateForm,
-            'percentage': forms.CreateInvoicePercentageForm,
+            "flat": forms.CreateInvoiceFlatForm,
+            "rate": forms.CreateInvoiceRateForm,
+            "percentage": forms.CreateInvoicePercentageForm,
         }
-        return form_class[self.kwargs.get('type')]
+        return form_class[self.kwargs.get("type")]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({
-            'project': self.project,
-        })
+        context.update({"project": self.project})
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'project': self.project
-        })
+        kwargs.update({"project": self.project})
         return kwargs
 
     def form_valid(self, form):
@@ -72,70 +66,66 @@ class ProjectCreateInvoiceView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        messages.success(self.request, _('Draft invoice created!'))
-        return reverse('invoices:invoice-detail', kwargs={
-            'id': self.invoice.id,
-        })
+        messages.success(self.request, _("Draft invoice created!"))
+        return reverse("invoices:invoice-detail", kwargs={"id": self.invoice.id})
 
 
 class ProjectListView(LoginRequiredMixin, FilterView):
 
-    template_name = 'projects/project_list.html'
+    template_name = "projects/project_list.html"
     model = Project
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
-    context_object_name = 'projects'
+    context_object_name = "projects"
     filterset_class = filters.ProjectFilter
 
     def get_queryset(self):
         qs = super().get_queryset()
-        qs = qs.annotate(expenses_amount=Sum('expenses__amount'))
+        qs = qs.annotate(expenses_amount=Sum("expenses__amount"))
         paid_invoice = Q(invoices__status=Invoice.PAID)
-        qs = qs.annotate(total_paid=Sum('invoices__total', filter=paid_invoice))
+        qs = qs.annotate(total_paid=Sum("invoices__total", filter=paid_invoice))
         return qs
 
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
 
-    template_name = 'projects/project_detail.html'
+    template_name = "projects/project_detail.html"
     model = Project
-    context_object_name = 'project'
-    pk_url_kwarg = 'id'
+    context_object_name = "project"
+    pk_url_kwarg = "id"
 
 
 class ExpenseCreateView(LoginRequiredMixin, CreateView):
 
-    template_name = 'projects/expense_create.html'
+    template_name = "projects/expense_create.html"
     model = Expense
     form_class = forms.ExpenseForm
-    success_url = reverse_lazy('projects:expense-list')
+    success_url = reverse_lazy("projects:expense-list")
 
 
 class ExpenseUpdateView(LoginRequiredMixin, UpdateView):
 
-    template_name = 'projects/expense_update.html'
+    template_name = "projects/expense_update.html"
     model = Expense
-    context_object_name = 'expense'
+    context_object_name = "expense"
     form_class = forms.ExpenseForm
-    pk_url_kwarg = 'id'
+    pk_url_kwarg = "id"
 
     def get_success_url(self):
-        return reverse('projects:expense-detail', kwargs={
-            'id': self.object.id,
-        })
+        return reverse("projects:expense-detail", kwargs={"id": self.object.id})
 
 
 class ExpenseListView(LoginRequiredMixin, FilterView):
 
-    template_name = 'projects/expense_list.html'
+    template_name = "projects/expense_list.html"
     model = Expense
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
-    context_object_name = 'expenses'
+    context_object_name = "expenses"
     filterset_class = filters.ExpenseFilter
 
 
 class ExpenseDetailView(LoginRequiredMixin, DetailView):
 
-    template_name = 'projects/expense_detail.html'
+    template_name = "projects/expense_detail.html"
     model = Expense
-    context_object_name = 'expense'
-    pk_url_kwarg = 'id'
+    context_object_name = "expense"
+    pk_url_kwarg = "id"

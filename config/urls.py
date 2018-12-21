@@ -18,15 +18,15 @@ from django.urls import include, path
 
 from proma.views import HomeView
 
-admin.site.site_title = 'Proma'
-admin.site.site_header = 'Proma'
+admin.site.site_title = "Proma"
+admin.site.site_header = "Proma"
 
 urlpatterns = [
-    path('super/', admin.site.urls),
-    path('', include('proma.users.urls', namespace='auth')),
-    path('', include('proma.clients.urls', namespace='clients')),
-    path('', include('proma.projects.urls', namespace='projects')),
-    path('', include('proma.invoices.urls', namespace='invoices')),
-    path('', include('proma.config.urls', namespace='config')),
-    path('', HomeView.as_view(), name='home'),
+    path("super/", admin.site.urls),
+    path("", include("proma.users.urls", namespace="auth")),
+    path("", include("proma.clients.urls", namespace="clients")),
+    path("", include("proma.projects.urls", namespace="projects")),
+    path("", include("proma.invoices.urls", namespace="invoices")),
+    path("", include("proma.config.urls", namespace="config")),
+    path("", HomeView.as_view(), name="home"),
 ]

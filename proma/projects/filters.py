@@ -7,13 +7,11 @@ from .models import Expense, Project
 
 class ProjectFilter(django_filters.FilterSet):
 
-    name = django_filters.CharFilter(lookup_expr='icontains')
+    name = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Project
-        fields = (
-            'status', 'client', 'name',
-        )
+        fields = ("status", "client", "name")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,13 +20,11 @@ class ProjectFilter(django_filters.FilterSet):
 
 class ExpenseFilter(django_filters.FilterSet):
 
-    name = django_filters.CharFilter(lookup_expr='icontains')
+    name = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Expense
-        fields = (
-            'project', 'is_billable', 'name',
-        )
+        fields = ("project", "is_billable", "name")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

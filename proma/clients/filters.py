@@ -7,14 +7,12 @@ from .models import Client
 
 class ClientFilter(django_filters.FilterSet):
 
-    name = django_filters.CharFilter(lookup_expr='icontains')
-    alias = django_filters.CharFilter(lookup_expr='icontains')
+    name = django_filters.CharFilter(lookup_expr="icontains")
+    alias = django_filters.CharFilter(lookup_expr="icontains")
 
     class Meta:
         model = Client
-        fields = (
-            'status', 'alias', 'name',
-        )
+        fields = ("status", "alias", "name")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

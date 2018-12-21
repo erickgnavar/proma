@@ -19,19 +19,19 @@ from .reports import InvoicePDF
 
 class InvoiceCreateView(LoginRequiredMixin, CreateView):
 
-    template_name = 'invoices/invoice_create.html'
+    template_name = "invoices/invoice_create.html"
     model = Invoice
     form_class = InvoiceForm
-    success_url = reverse_lazy('invoices:invoice-list')
+    success_url = reverse_lazy("invoices:invoice-list")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['items_formset'] = ItemsFormset(self.request.POST or None)
+        context["items_formset"] = ItemsFormset(self.request.POST or None)
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
-        items_formset = context['items_formset']
+        items_formset = context["items_formset"]
         if form.is_valid() and items_formset.is_valid():
             invoice = form.save()
             items_formset.instance = invoice
@@ -43,18 +43,16 @@ class InvoiceCreateView(LoginRequiredMixin, CreateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('invoices:invoice-detail', kwargs={
-            'id': self.object.id,
-        })
+        return reverse("invoices:invoice-detail", kwargs={"id": self.object.id})
 
 
 class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
 
-    template_name = 'invoices/invoice_update.html'
+    template_name = "invoices/invoice_update.html"
     model = Invoice
-    context_object_name = 'invoice'
+    context_object_name = "invoice"
     form_class = InvoiceForm
-    pk_url_kwarg = 'id'
+    pk_url_kwarg = "id"
 
     def dispatch(self, request, *args, **kwargs):
         invoice = self.get_object()
@@ -62,16 +60,18 @@ class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
             return super().dispatch(request, *args, **kwargs)
         else:
             messages.error(request, _("The invoice can't be edited"))
-            return redirect('invoices:invoice-detail', id=invoice.id)
+            return redirect("invoices:invoice-detail", id=invoice.id)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['items_formset'] = ItemsFormset(self.request.POST or None, instance=self.object)
+        context["items_formset"] = ItemsFormset(
+            self.request.POST or None, instance=self.object
+        )
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
-        items_formset = context['items_formset']
+        items_formset = context["items_formset"]
         if form.is_valid() and items_formset.is_valid():
             items_formset.save()
             invoice = form.save(commit=False)
@@ -81,26 +81,24 @@ class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse('invoices:invoice-detail', kwargs={
-            'id': self.object.id,
-        })
+        return reverse("invoices:invoice-detail", kwargs={"id": self.object.id})
 
 
 class InvoiceListView(LoginRequiredMixin, FilterView):
 
-    template_name = 'invoices/invoice_list.html'
+    template_name = "invoices/invoice_list.html"
     model = Invoice
     paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
-    context_object_name = 'invoices'
+    context_object_name = "invoices"
     filterset_class = filters.InvoiceFilter
 
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):
 
-    template_name = 'invoices/invoice_detail.html'
+    template_name = "invoices/invoice_detail.html"
     model = Invoice
-    context_object_name = 'invoice'
-    pk_url_kwarg = 'id'
+    context_object_name = "invoice"
+    pk_url_kwarg = "id"
 
 
 class InvoiceDownloadPDFView(LoginRequiredMixin, PDFView):
@@ -108,48 +106,45 @@ class InvoiceDownloadPDFView(LoginRequiredMixin, PDFView):
     report_class = InvoicePDF
 
     def dispatch(self, request, *args, **kwargs):
-        self.invoice = get_object_or_404(Invoice, ~Q(status=Invoice.DRAFT), id=kwargs.get('id'))
+        self.invoice = get_object_or_404(
+            Invoice, ~Q(status=Invoice.DRAFT), id=kwargs.get("id")
+        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_report_kwargs(self):
-        return {
-            'invoice': self.invoice
-        }
+        return {"invoice": self.invoice}
 
 
 class InvoiceActionView(LoginRequiredMixin, RedirectView):
-
     def dispatch(self, request, *args, **kwargs):
-        self.invoice = get_object_or_404(Invoice, id=kwargs.get('id'))
+        self.invoice = get_object_or_404(Invoice, id=kwargs.get("id"))
         return super().dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, **kwargs):
-        action = kwargs.get('action')
-        if action == 'open':
+        action = kwargs.get("action")
+        if action == "open":
             try:
                 self.invoice.open()
                 self.invoice.save()
                 tasks.notify_open_invoice.delay(self.invoice.id)
-                messages.success(self.request, _('Invoice opened!'))
+                messages.success(self.request, _("Invoice opened!"))
             except InvoiceException as ex:
                 messages.error(self.request, str(ex))
-        elif action == 'cancel':
+        elif action == "cancel":
             try:
                 self.invoice.cancel()
                 self.invoice.save()
-                messages.success(self.request, _('Invoice canceled!'))
+                messages.success(self.request, _("Invoice canceled!"))
             except InvoiceException as ex:
                 messages.error(self.request, str(ex))
-        return reverse('invoices:invoice-detail', kwargs={
-            'id': self.invoice.id,
-        })
+        return reverse("invoices:invoice-detail", kwargs={"id": self.invoice.id})
 
 
 class InvoiceActionPayView(LoginRequiredMixin, UpdateView):
 
     model = Invoice
-    template_name = 'invoices/pay.html'
-    pk_url_kwarg = 'id'
+    template_name = "invoices/pay.html"
+    pk_url_kwarg = "id"
     form_class = PayInvoiceForm
 
     def get_queryset(self):
@@ -159,33 +154,34 @@ class InvoiceActionPayView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         invoice = form.save()
-        invoice.pay(notes=form.cleaned_data['payment_notes'])
-        messages.success(self.request, _('Invoice Paid!'))
+        invoice.pay(notes=form.cleaned_data["payment_notes"])
+        messages.success(self.request, _("Invoice Paid!"))
         return super().form_valid(form)
 
     def get_success_url(self, **kwargs):
-        return reverse('invoices:invoice-detail', kwargs={'id': self.object.id})
+        return reverse("invoices:invoice-detail", kwargs={"id": self.object.id})
 
 
 class InvoicePublicDetailView(DetailView):
 
-    template_name = 'invoices/invoice_public_detail.html'
+    template_name = "invoices/invoice_public_detail.html"
     model = Invoice
-    context_object_name = 'invoice'
+    context_object_name = "invoice"
 
     def get_object(self):
-        return get_object_or_404(Invoice, token=self.kwargs.get('token'), status=Invoice.OPEN)
+        return get_object_or_404(
+            Invoice, token=self.kwargs.get("token"), status=Invoice.OPEN
+        )
 
 
 class InvoiceResendEmailView(LoginRequiredMixin, RedirectView):
-
     def dispatch(self, request, *args, **kwargs):
-        self.invoice = get_object_or_404(Invoice, status=Invoice.OPEN, id=kwargs.get('id'))
+        self.invoice = get_object_or_404(
+            Invoice, status=Invoice.OPEN, id=kwargs.get("id")
+        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_redirect_url(self, **kwargs):
         tasks.notify_open_invoice.delay(self.invoice.id)
-        messages.success(self.request, _('Email sent!'))
-        return reverse('invoices:invoice-detail', kwargs={
-            'id': self.invoice.id,
-        })
+        messages.success(self.request, _("Email sent!"))
+        return reverse("invoices:invoice-detail", kwargs={"id": self.invoice.id})

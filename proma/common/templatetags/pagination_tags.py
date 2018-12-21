@@ -19,10 +19,10 @@ def pagination_range(page_obj, length):
         if page_range[0] != 1:
             left_block += [1]
             if page_range[0] != 2:
-                left_block += ['...']
+                left_block += ["..."]
         if page_range[-1] != num_pages:
             if page_range[-1] != num_pages - 1:
-                right_block += ['...']
+                right_block += ["..."]
             right_block += [num_pages]
     return left_block + list(page_range) + right_block
 
@@ -30,5 +30,5 @@ def pagination_range(page_obj, length):
 @register.filter
 def querystring_without_page(request):
     query = copy.deepcopy(request.GET)
-    query.pop('page', None)
+    query.pop("page", None)
     return query.urlencode()

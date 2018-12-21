@@ -8,5 +8,5 @@ class FormWithDateFields:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name in self.date_fields:
-            self.fields[field_name].widget.attrs['data-provide'] = 'datepicker'
-            self.fields[field_name].widget.attrs['data-date-format'] = 'yyyy-mm-dd'
+            self.fields[field_name].widget.attrs["data-provide"] = "datepicker"
+            self.fields[field_name].widget.attrs["data-date-format"] = "yyyy-mm-dd"

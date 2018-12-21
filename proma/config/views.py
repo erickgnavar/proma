@@ -10,7 +10,7 @@ from .models import Configuration
 
 class ConfigurationUpdateView(LoginRequiredMixin, UpdateView):
 
-    template_name = 'config/configuration_update.html'
+    template_name = "config/configuration_update.html"
     model = Configuration
     form_class = ConfigurationForm
 
@@ -18,5 +18,5 @@ class ConfigurationUpdateView(LoginRequiredMixin, UpdateView):
         return Configuration.get_instance()
 
     def get_success_url(self):
-        messages.success(self.request, _('Configuration saved!'))
-        return reverse('config:configuration-update')
+        messages.success(self.request, _("Configuration saved!"))
+        return reverse("config:configuration-update")

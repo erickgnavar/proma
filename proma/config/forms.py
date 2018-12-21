@@ -4,7 +4,6 @@ from .models import Configuration
 
 
 class ConfigurationForm(forms.ModelForm):
-
     class Meta:
         model = Configuration
-        fields = '__all__'
+        fields = "__all__"

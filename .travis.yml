@@ -17,6 +17,7 @@ before_script:
   - export DB_PASSWORD=""
 
 script:
+  - poetry run black --check .
   - poetry run flake8 .
   - poetry run pytest
 

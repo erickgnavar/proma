@@ -5,4 +5,4 @@ class CommonFilterHelper(FormHelper):
 
     form_tag = False
     disable_csrf = True
-    field_template = 'bootstrap4/layout/inline_field.html'
+    field_template = "bootstrap4/layout/inline_field.html"

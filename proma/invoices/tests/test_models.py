@@ -7,10 +7,9 @@ from ..models import Invoice, Item
 
 
 class InvoiceTestCase(TestCase):
-
     def setUp(self):
-        self.client = mixer.blend('clients.Client')
-        self.project = mixer.blend('projects.Project')
+        self.client = mixer.blend("clients.Client")
+        self.project = mixer.blend("projects.Project")
 
     def test_str_draft(self):
         invoice = Invoice()
@@ -32,14 +31,9 @@ class InvoiceTestCase(TestCase):
 
     def test_compute_totals_with_items_no_taxes(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
-            client=self.client,
-            project=self.project,
+            due_date="2018-01-01", client=self.client, project=self.project
         )
-        invoice.items.create(
-            rate=10,
-            units=10,
-        )
+        invoice.items.create(rate=10, units=10)
         self.assertEqual(invoice.tax_total, 0)
         self.assertEqual(invoice.subtotal, 0)
         self.assertEqual(invoice.total, 0)
@@ -50,15 +44,12 @@ class InvoiceTestCase(TestCase):
 
     def test_compute_totals_with_items_and_taxes(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
         )
-        invoice.items.create(
-            rate=10,
-            units=10,
-        )
+        invoice.items.create(rate=10, units=10)
         self.assertEqual(invoice.tax_total, 0)
         self.assertEqual(invoice.subtotal, 0)
         self.assertEqual(invoice.total, 0)
@@ -80,20 +71,17 @@ class InvoiceTestCase(TestCase):
         invoice.status = Invoice.PAID
         invoice._compute_number()
         now = timezone.now()
-        number = f'{now.year}00001'
+        number = f"{now.year}00001"
         self.assertEqual(invoice.number, number)
 
     def test_open(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
         )
-        invoice.items.create(
-            rate=10,
-            units=10,
-        )
+        invoice.items.create(rate=10, units=10)
         self.assertEqual(invoice.status, Invoice.DRAFT)
         self.assertIsNone(invoice.opening_date)
         invoice.open()
@@ -102,7 +90,7 @@ class InvoiceTestCase(TestCase):
 
     def test_open_raise_error_with_no_items(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
@@ -112,7 +100,7 @@ class InvoiceTestCase(TestCase):
 
     def test_open_raise_error_for_wrong_status(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
@@ -123,7 +111,7 @@ class InvoiceTestCase(TestCase):
 
     def test_pay(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
@@ -137,7 +125,7 @@ class InvoiceTestCase(TestCase):
 
     def test_pay_raise_error_for_wrong_status(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
@@ -148,7 +136,7 @@ class InvoiceTestCase(TestCase):
 
     def test_cancel(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
@@ -162,7 +150,7 @@ class InvoiceTestCase(TestCase):
 
     def test_cancel_raise_error_for_wrong_status(self):
         invoice = Invoice.objects.create(
-            due_date='2018-01-01',
+            due_date="2018-01-01",
             client=self.client,
             project=self.project,
             tax_percent=10,
@@ -173,33 +161,32 @@ class InvoiceTestCase(TestCase):
 
     def test_create_from_project_flat(self):
         self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 0)
-        invoice = Invoice.create_from_project_flat(self.project, 'test', 100)
+        invoice = Invoice.create_from_project_flat(self.project, "test", 100)
         self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 1)
         item = invoice.items.first()
-        self.assertEqual(item.description, 'test')
+        self.assertEqual(item.description, "test")
         self.assertEqual(item.units, 1)
         self.assertEqual(item.rate, 100)
         self.assertEqual(invoice.total, 100)
 
     def test_create_from_project_rate(self):
         self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 0)
-        invoice = Invoice.create_from_project_rate(self.project, 'test', 20, 10)
+        invoice = Invoice.create_from_project_rate(self.project, "test", 20, 10)
         self.assertEqual(Item.objects.filter(invoice__project=self.project).count(), 1)
         item = invoice.items.first()
-        self.assertEqual(item.description, 'test')
+        self.assertEqual(item.description, "test")
         self.assertEqual(item.units, 10)
         self.assertEqual(item.rate, 20)
         self.assertEqual(invoice.total, 200)
 
 
 class ItemTestCase(TestCase):
-
     def setUp(self):
-        self.invoice = mixer.blend('invoices.Invoice')
+        self.invoice = mixer.blend("invoices.Invoice")
 
     def test_str(self):
-        item = Item(rate=10, units=10, invoice=self.invoice, description='test')
-        self.assertEqual(str(item), 'test: 0')
+        item = Item(rate=10, units=10, invoice=self.invoice, description="test")
+        self.assertEqual(str(item), "test: 0")
 
     def test_compute_total_after_save(self):
         item = Item(rate=10, units=10, invoice=self.invoice)
