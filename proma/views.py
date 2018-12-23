@@ -18,6 +18,11 @@ class HomeView(LoginRequiredMixin, TemplateView):
                 "expenses_quantity": Expense.objects.count(),
                 "clients_quantity": Client.objects.count(),
                 "invoices_quantity": Invoice.objects.count(),
+                "latest_invoices": Invoice.objects.exclude(
+                    status__in=(Invoice.DRAFT, Invoice.CANCELLED)
+                )
+                .select_related("client")
+                .order_by("-issue_date")[:5],
             }
         )
         return context

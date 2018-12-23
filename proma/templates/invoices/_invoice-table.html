@@ -1,0 +1,57 @@
+{% load i18n humanize %}
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>{% trans "Client"|upper %}</th>
+      <th class="text-center">{% trans "Issued date"|upper %}</th>
+      <th class="text-center">{% trans "Due date"|upper %}</th>
+      <th class="text-right">{% trans "Total"|upper %}</th>
+      <th class="text-center">{% trans "Status"|upper %}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for invoice in invoices %}
+      <tr>
+        <td class="text-center align-middle">
+          <a href="{% url "clients:client-detail" invoice.client.id %}">
+            <img alt="{{ invoice.client.name }}" src="{{ invoice.client.gravatar_image_url }}?size=50" class="rounded-circle" />
+          </a>
+        </td>
+        <td class="align-middle">
+          <b>{{ invoice.client }}</b>
+          <br/>
+          {% if invoice.status != invoice.DRAFT %}
+            {{ invoice.number }}
+          {% endif %}
+        </td>
+        <td class="text-center align-middle">
+          {{ invoice.issue_date }}
+        </td>
+        <td class="text-center align-middle">
+          {{ invoice.due_date|naturalday }}
+        </td>
+        <td class="text-right align-middle">
+          {{ invoice.total }}
+        </td>
+        <td class="text-center align-middle">
+          {% if invoice.status == invoice.PAID %}
+            <span class="badge badge-success badge-pill">{{ invoice.get_status_display }}</span>
+          {% elif invoice.status == invoice.CANCELLED %}
+            <span class="badge badge-danger badge-pill">{{ invoice.get_status_display }}</span>
+          {% elif invoice.status == invoice.OPEN %}
+            <span class="badge badge-info badge-pill">{{ invoice.get_status_display }}</span>
+          {% elif invoice.status == invoice.DRAFT %}
+            <span class="badge badge-secondary badge-pill">{{ invoice.get_status_display }}</span>
+          {% endif %}
+        </td>
+        <td class="text-center align-middle">
+          <a href="{% url "invoices:invoice-detail" invoice.id %}">
+            {% trans "View" %}
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

@@ -1,3 +1,5 @@
+import hashlib
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
@@ -29,6 +31,11 @@ class Client(TimeStampedModel):
     city = models.CharField(_("City"), max_length=100, null=True, blank=True)
     country = models.CharField(_("Country"), max_length=100, null=True, blank=True)
     zipcode = models.CharField(_("Zipcode"), max_length=10, null=True, blank=True)
+
+    @property
+    def gravatar_image_url(self):
+        hash_ = hashlib.md5(self.email.strip().encode()).hexdigest()
+        return f"http://www.gravatar.com/avatar/{hash_}"
 
     class Meta:
         verbose_name = _("Client")

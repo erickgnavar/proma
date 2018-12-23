@@ -1,17 +1,17 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load i18n %}
 {% block content %}
 <div class="row text-center">
   <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ clients_quantity }} {% trans 'Clients' %}</h5>
+        <h5 class="card-title">{{ clients_quantity }} {% trans "Clients" %}</h5>
         <p>
           <i class="fas fa-8x fa-users"></i>
         </p>
-        <a href="{% url 'clients:client-create' %}" class="btn btn-outline-primary">
+        <a href="{% url "clients:client-create" %}" class="btn btn-outline-secondary">
           <i class="fas fa-plus"></i>
-          {% trans 'New client' %}
+          {% trans "New client" %}
         </a>
       </div>
     </div>
@@ -19,13 +19,13 @@
   <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ projects_quantity }} {% trans 'Projects' %}</h5>
+        <h5 class="card-title">{{ projects_quantity }} {% trans "Projects" %}</h5>
         <p>
           <i class="fas fa-8x fa-folder"></i>
         </p>
-        <a href="{% url 'projects:project-create' %}" class="btn btn-outline-primary">
+        <a href="{% url "projects:project-create" %}" class="btn btn-outline-secondary">
           <i class="fas fa-plus"></i>
-          {% trans 'New project' %}
+          {% trans "New project" %}
         </a>
       </div>
     </div>
@@ -33,13 +33,13 @@
   <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ expenses_quantity }} {% trans 'Expenses' %}</h5>
+        <h5 class="card-title">{{ expenses_quantity }} {% trans "Expenses" %}</h5>
         <p>
           <i class="fas fa-8x fa-money-bill-alt"></i>
         </p>
-        <a href="{% url 'projects:expense-create' %}" class="btn btn-outline-primary">
+        <a href="{% url "projects:expense-create" %}" class="btn btn-outline-secondary">
           <i class="fas fa-plus"></i>
-          {% trans 'New expense' %}
+          {% trans "New expense" %}
         </a>
       </div>
     </div>
@@ -47,16 +47,25 @@
   <div class="col-sm-3">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ invoices_quantity }} {% trans 'Invoices' %}</h5>
+        <h5 class="card-title">{{ invoices_quantity }} {% trans "Invoices" %}</h5>
         <p>
           <i class="fas fa-8x fa-dollar-sign"></i>
         </p>
-        <a href="{% url 'invoices:invoice-create' %}" class="btn btn-outline-primary">
+        <a href="{% url "invoices:invoice-create" %}" class="btn btn-outline-secondary">
           <i class="fas fa-plus"></i>
-          {% trans 'New invoice' %}
+          {% trans "New invoice" %}
         </a>
       </div>
     </div>
+  </div>
+</div>
+<br/>
+<div class="row">
+  <div class="col-md-12">
+    <h3>
+      {% trans "Latest invoices" %}
+    </h3>
+    {% include "invoices/_invoice-table.html" with invoices=latest_invoices %}
   </div>
 </div>
 {% endblock content %}

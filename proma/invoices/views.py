@@ -92,6 +92,11 @@ class InvoiceListView(LoginRequiredMixin, FilterView):
     context_object_name = "invoices"
     filterset_class = filters.InvoiceFilter
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.select_related("client")
+        return qs
+
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):
 
