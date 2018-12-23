@@ -1,3 +1,4 @@
+import re
 from decimal import Decimal
 
 from django import forms
@@ -134,3 +135,20 @@ class TimesheetForm(FormWithDateFields, forms.ModelForm):
     class Meta:
         model = Timesheet
         fields = ("label", "project", "date_start", "date_end")
+
+
+class AssignProjectToTimesheetsForm(forms.Form):
+
+    project = forms.ModelChoiceField(label=_("Project"), queryset=Project.objects.all())
+    timesheets = forms.CharField(widget=forms.HiddenInput)
+    # this is used to accept values from javascript in the template
+
+    def clean_timesheets(self):
+        ids = re.findall(r"\d+", self.cleaned_data.get("timesheets"))
+        return Timesheet.objects.filter(id__in=ids)
+
+    def process(self):
+        """
+        Assign project to selected timesheets
+        """
+        self.cleaned_data["timesheets"].update(project=self.cleaned_data["project"])

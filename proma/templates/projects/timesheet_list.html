@@ -1,10 +1,14 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n static crispy_forms_tags %}
 {% block content %}
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     <h1 class="h2">Timesheets</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
+        <button class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#assign-project-modal">
+          <i class="fas fa-exchange-alt"></i>
+          {% trans "Assign project" %}
+        </button>
         <a class="btn btn-sm btn-outline-secondary" href="{% url "projects:timesheet-create" %}">
           <i class="fas fa-plus"></i>
           {% trans "New timesheet" %}
@@ -20,6 +24,9 @@
       <table class="table table-bordered table-striped">
         <thead>
           <tr>
+            <td>
+              <input type="checkbox" id="checkbox-toggle-all"/>
+            </td>
             <td>{% trans "Label" %}</td>
             <td>{% trans "Date start" %}</td>
             <td>{% trans "Date end" %}</td>
@@ -31,6 +38,9 @@
         <tbody>
           {% for timesheet in timesheets %}
             <tr>
+              <td>
+                <input type="checkbox" class="timesheet-checkbox" data-timesheet-id="{{ timesheet.id }}"/>
+              </td>
               <td>
                 <a class="btn btn-outline-info btn-sm" href="{% url "projects:timesheet-detail" timesheet.id %}">
                   <i class="fas fa-info"></i>
@@ -57,4 +67,40 @@
       {% include "_pagination.html" %}
     </div>
   </div>
+
+  <div class="modal fade" id="assign-project-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {% trans "Choose a project" %}
+            <small>
+              <span id="timesheets-quantity">0</span> {% trans "timesheets selected" %}
+            </small>
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="" id="form-assign-project">
+            {% csrf_token %}
+            {{ assign_project_form|crispy }}
+          </form>
+          <p>
+            {% trans "The project will be assigned to the selected timesheets" %}
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans "Close" %}</button>
+          <button type="button" class="btn btn-primary" id="btn-assign-project">
+            {% trans "Assign project" %}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}
+{% block javascript %}
+  <script src="{% static "js/timesheet-list.js" %}"></script>
+{% endblock %}

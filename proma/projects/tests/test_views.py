@@ -4,7 +4,7 @@ from django.urls import resolve, reverse
 from mixer.backend.django import mixer
 
 from .. import forms, views
-from ..models import Project
+from ..models import Project, Timesheet
 
 
 class ProjectCreateViewTestCase(TestCase):
@@ -463,6 +463,39 @@ class TimesheetListViewTestCase(TestCase):
         self.assertIn("timesheets", response.context_data)
         self.assertIn("filter", response.context_data)
         self.assertEqual(response.context_data["timesheets"].count(), 5)
+
+    def test_valid_assign_project_form(self):
+        mixer.cycle(5).blend("projects.Timesheet", project=None)
+        ids = Timesheet.objects.values_list("id", flat=True)
+        project = mixer.blend("projects.Project")
+        request = self.factory.post(
+            "/", {"project": project.id, "timesheets": ",".join(map(str, ids))}
+        )
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        request.user = self.user
+        self.assertEqual(Timesheet.objects.filter(project=None).count(), 5)
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        expected_url = reverse("projects:timesheet-list")
+        self.assertEqual(response["location"], expected_url)
+        self.assertEqual(Timesheet.objects.filter(project=None).count(), 0)
+
+    def test_invalid_assign_project_form(self):
+        mixer.cycle(5).blend("projects.Timesheet", project=None)
+        ids = Timesheet.objects.values_list("id", flat=True)
+        request = self.factory.post(
+            "/", {"project": None, "timesheets": ",".join(map(str, ids))}
+        )
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        request.user = self.user
+        self.assertEqual(Timesheet.objects.filter(project=None).count(), 5)
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        expected_url = reverse("projects:timesheet-list")
+        self.assertEqual(response["location"], expected_url)
+        self.assertEqual(Timesheet.objects.filter(project=None).count(), 5)
 
 
 class TimesheetDetailViewTestCase(TestCase):

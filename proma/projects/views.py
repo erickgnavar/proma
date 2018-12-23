@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Sum
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views.generic import (
@@ -147,8 +147,18 @@ class TimesheetListView(LoginRequiredMixin, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"projects": Project.objects.all()})
+        context.update({"assign_project_form": forms.AssignProjectToTimesheetsForm()})
         return context
+
+    def post(self, request, *args, **kwargs):
+        # TODO: move this to an external view
+        form = forms.AssignProjectToTimesheetsForm(request.POST or None)
+        if form.is_valid():
+            form.process()
+            messages.success(request, _("The assignment was successful"))
+        else:
+            messages.warning(request, _("Project assignment failed, try again"))
+        return redirect("projects:timesheet-list")
 
 
 class TimesheetCreateView(LoginRequiredMixin, CreateView):
