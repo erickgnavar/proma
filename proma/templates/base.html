@@ -1,4 +1,4 @@
-{% load staticfiles i18n %}
+{% load staticfiles i18n humanize %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -19,6 +19,19 @@
   <body>
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Proma</a>
+      {% if active_timesheet %}
+        <a class="navbar-brand col-md-2 text-success" href="{% url "projects:timesheet-clock-out" %}">
+          <i class="fas fa-clock"></i>
+          {% trans "Active timesheet since" %} {{ active_timesheet.date_start|naturaltime }} {{ active_timesheet.label|default_if_none:"" }}
+          <small>{% trans "Click to stop" %}</small>
+        </a>
+      {% else %}
+        <a class="navbar-brand col-md-2 text-secondary" href="{% url "projects:timesheet-clock-in" %}">
+          <i class="fas fa-clock"></i>
+          {% trans "No active timesheet" %}
+          <small>{% trans "Click to start a new one" %}</small>
+        </a>
+      {% endif %}
       <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">

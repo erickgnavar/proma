@@ -5,12 +5,18 @@ from django.db.models import Q, Sum
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import CreateView, DetailView, FormView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    FormView,
+    RedirectView,
+    UpdateView,
+)
 from django_filters.views import FilterView
 
 from proma.invoices.models import Invoice
 
-from . import filters, forms
+from . import exceptions, filters, forms
 from .models import Expense, Project, Timesheet
 
 
@@ -171,3 +177,23 @@ class TimesheetDetailView(LoginRequiredMixin, DetailView):
     model = Timesheet
     context_object_name = "timesheet"
     pk_url_kwarg = "id"
+
+
+class TimesheetClockInView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, **kwargs):
+        redirect_url = self.request.META.get("HTTP_REFERER", reverse("home"))
+        try:
+            Timesheet.clock_in()
+        except exceptions.ActiveTimesheetExists:
+            messages.warning(self.request, _("There is already an active timesheet"))
+        return redirect_url
+
+
+class TimesheetClockOutView(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, **kwargs):
+        redirect_url = self.request.META.get("HTTP_REFERER", reverse("home"))
+        try:
+            Timesheet.clock_out()
+        except exceptions.ActiveTimesheetDoesNotExist:
+            messages.warning(self.request, _("There is not active timesheet"))
+        return redirect_url

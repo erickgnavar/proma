@@ -47,4 +47,14 @@ urlpatterns = [
         views.TimesheetUpdateView.as_view(),
         name="timesheet-update",
     ),
+    path(
+        "timesheets/clock-in/",
+        views.TimesheetClockInView.as_view(),
+        name="timesheet-clock-in",
+    ),
+    path(
+        "timesheets/clock-out/",
+        views.TimesheetClockOutView.as_view(),
+        name="timesheet-clock-out",
+    ),
 ]

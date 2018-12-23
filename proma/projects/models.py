@@ -5,6 +5,8 @@ from django.utils.translation import get_language, get_language_info
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 
+from . import exceptions
+
 
 class Project(TimeStampedModel):
 
@@ -126,3 +128,22 @@ class Timesheet(TimeStampedModel):
             return format_timedelta(self.diff, format="long", locale=lang["code"])
         else:
             return ""
+
+    def finish(self):
+        self.date_end = timezone.now()
+        self.is_active = False
+        self.save()
+
+    @classmethod
+    def clock_in(cls, project=None, label=None):
+        if cls.objects.filter(is_active=True).exists():
+            raise exceptions.ActiveTimesheetExists
+
+        return cls.objects.create(project=project, is_active=True, label=label)
+
+    @classmethod
+    def clock_out(cls):
+        timesheet = cls.objects.filter(is_active=True).first()
+        if timesheet is None:
+            raise exceptions.ActiveTimesheetDoesNotExist
+        timesheet.finish()

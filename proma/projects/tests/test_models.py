@@ -1,7 +1,9 @@
-from django.test import TestCase
 from datetime import timedelta
+
+from django.test import TestCase
 from django.utils import timezone
 
+from .. import exceptions
 from ..models import Expense, Project, Timesheet
 
 
@@ -43,3 +45,38 @@ class TimesheetTestCase(TestCase):
         date_start = timezone.now()
         timesheet = Timesheet(date_start=date_start, date_end=None)
         self.assertEqual(timesheet.diff_humanize, "")
+
+    def test_finish(self):
+        timesheet = Timesheet.objects.create(is_active=True)
+        self.assertIsNone(timesheet.date_end)
+        timesheet.finish()
+        self.assertIsNotNone(timesheet.date_end)
+        self.assertFalse(timesheet.is_active)
+
+    def test_clock_in(self):
+        qs = Timesheet.objects.filter(is_active=True)
+        self.assertEqual(qs.count(), 0)
+        Timesheet.clock_in()
+        self.assertEqual(qs.count(), 1)
+
+    def test_clock_in_raise_error_when_an_active_timesheet_exists(self):
+        qs = Timesheet.objects.filter(is_active=True)
+        Timesheet.objects.create(is_active=True)
+        self.assertEqual(qs.count(), 1)
+        with self.assertRaises(exceptions.ActiveTimesheetExists):
+            Timesheet.clock_in()
+        self.assertEqual(qs.count(), 1)
+
+    def test_clock_out(self):
+        Timesheet.objects.create(is_active=True)
+        qs = Timesheet.objects.filter(is_active=True)
+        self.assertEqual(qs.count(), 1)
+        Timesheet.clock_out()
+        self.assertEqual(qs.count(), 0)
+
+    def test_clock_out_raise_error_when_there_is_no_active_timesheet(self):
+        qs = Timesheet.objects.filter(is_active=True)
+        self.assertEqual(qs.count(), 0)
+        with self.assertRaises(exceptions.ActiveTimesheetDoesNotExist):
+            Timesheet.clock_out()
+        self.assertEqual(qs.count(), 0)

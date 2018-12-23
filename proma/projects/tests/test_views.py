@@ -482,3 +482,60 @@ class TimesheetDetailViewTestCase(TestCase):
         response = self.view(request, id=self.timesheet.id)
         self.assertEqual(response.status_code, 200)
         self.assertIn("timesheet", response.context_data)
+
+
+class TimesheetClockInViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.TimesheetClockInView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+
+    def test_match_expected_view(self):
+        url = resolve("/timesheets/clock-in/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_redirect_to_referer(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        expected_url = "redirect"
+        request.META["HTTP_REFERER"] = expected_url
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["location"], expected_url)
+
+    def test_redirect_to_home_when_there_is_not_a_referer(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        expected_url = reverse("home")
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["location"], expected_url)
+
+
+class TimesheetClockOutViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.TimesheetClockOutView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+        mixer.blend("projects.Timesheet", is_active=True)
+
+    def test_match_expected_view(self):
+        url = resolve("/timesheets/clock-out/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_redirect_to_referer(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        expected_url = "redirect"
+        request.META["HTTP_REFERER"] = expected_url
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["location"], expected_url)
+
+    def test_redirect_to_home_when_there_is_not_a_referer(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        expected_url = reverse("home")
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["location"], expected_url)
