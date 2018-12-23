@@ -83,7 +83,13 @@
         <a class="list-group-item list-group-item-action" href="{% url 'invoices:invoice-detail' invoice.id %}">
           <i class="fas fa-dollar-sign"></i>
           {{ invoice }} {{ invoice.total }}
-          <span class="badge badge-primary badge-pill">{{ invoice.get_status_display }}</span>
+          {% if invoice.status == invoice.PAID %}
+          <span class="badge badge-success badge-pill">{{ invoice.get_status_display }}</span>
+          {% elif invoice.status == invoice.CANCELLED %}
+          <span class="badge badge-danger badge-pill">{{ invoice.get_status_display }}</span>
+          {% elif invoice.status == invoice.OPEN %}
+          <span class="badge badge-info badge-pill">{{ invoice.get_status_display }}</span>
+          {% endif %}
         </a>
         {% endfor %}
       </div>

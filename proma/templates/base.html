@@ -35,7 +35,7 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="{% url 'home' %}">
+                <a class="nav-link {% if request.path == "/" %}active{% endif %}" href="{% url 'home' %}">
                   <span class="fas fa-home"></span>
                   {% trans 'Dashboard' %} <span class="sr-only">(current)</span>
                 </a>
@@ -44,25 +44,25 @@
 
             <ul class="nav flex-column mb-2">
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'clients:client-list' %}">
+                <a class="nav-link {% if "clients" in request.path %}active{% endif %}" href="{% url 'clients:client-list' %}">
                   <span class="fas fa-users"></span>
                   {% trans 'Clients' %}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'projects:project-list' %}">
+                <a class="nav-link {% if "projects" in request.path %}active{% endif %}" href="{% url 'projects:project-list' %}">
                   <span class="fas fa-folder"></span>
                   {% trans 'Projects' %}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'projects:expense-list' %}">
+                <a class="nav-link {% if "expenses" in request.path %}active{% endif %}" href="{% url 'projects:expense-list' %}">
                   <span class="fas fa-money-bill-alt"></span>
                   {% trans 'Expenses' %}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'invoices:invoice-list' %}">
+                <a class="nav-link {% if "invoices" in request.path %}active{% endif %}" href="{% url 'invoices:invoice-list' %}">
                   <span class="fas fa-dollar-sign"></span>
                   {% trans 'Invoices' %}
                 </a>
@@ -98,13 +98,13 @@
             </h6>
             <ul class="nav flex-column mb-2">
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'config:configuration-update' %}">
+                <a class="nav-link {% if request.path == "/settings/" %}active{% endif %}" href="{% url 'config:configuration-update' %}">
                   <span class="fas fa-wrench"></span>
                   {% trans 'Configuration' %}
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'users:change-password' %}">
+                <a class="nav-link {% if request.path == "/change-password" %}active{% endif %}" href="{% url 'users:change-password' %}">
                   <span class="fas fa-key"></span>
                   {% trans 'Change password' %}
                 </a>
