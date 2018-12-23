@@ -1,5 +1,7 @@
+from babel.dates import format_timedelta
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import get_language, get_language_info
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 
@@ -88,3 +90,39 @@ class Expense(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+class Timesheet(TimeStampedModel):
+
+    project = models.ForeignKey(
+        "projects.Project", on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    is_active = models.BooleanField(_("Is active?"), default=False)
+    label = models.CharField(_("Label"), max_length=50, null=True, blank=True)
+    date_start = models.DateTimeField(_("Date start"), default=timezone.now)
+    date_end = models.DateTimeField(_("Date end"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("Timesheet")
+        verbose_name_plural = _("Timesheets")
+        default_related_name = "timesheets"
+        ordering = ("-created",)
+
+    def __str__(self):
+        return self.label
+
+    @property
+    def diff(self):
+        if self.date_end:
+            return self.date_end - self.date_start
+        return None
+
+    @property
+    def diff_humanize(self):
+        if self.diff:
+            # get_language return a format like en-us and this isn't allowed by babel
+            lang = get_language_info(get_language())
+            return format_timedelta(self.diff, format="long", locale=lang["code"])
+        else:
+            return ""

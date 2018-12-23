@@ -11,7 +11,7 @@ from django_filters.views import FilterView
 from proma.invoices.models import Invoice
 
 from . import filters, forms
-from .models import Expense, Project
+from .models import Expense, Project, Timesheet
 
 
 class ProjectCreateView(LoginRequiredMixin, CreateView):
@@ -128,4 +128,46 @@ class ExpenseDetailView(LoginRequiredMixin, DetailView):
     template_name = "projects/expense_detail.html"
     model = Expense
     context_object_name = "expense"
+    pk_url_kwarg = "id"
+
+
+class TimesheetListView(LoginRequiredMixin, FilterView):
+
+    template_name = "projects/timesheet_list.html"
+    model = Timesheet
+    paginate_by = settings.PAGINATION_DEFAULT_PAGE_SIZE
+    context_object_name = "timesheets"
+    filterset_class = filters.TimesheetFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({"projects": Project.objects.all()})
+        return context
+
+
+class TimesheetCreateView(LoginRequiredMixin, CreateView):
+
+    template_name = "projects/timesheet_create.html"
+    model = Timesheet
+    form_class = forms.TimesheetForm
+    success_url = reverse_lazy("projects:timesheet-list")
+
+
+class TimesheetUpdateView(LoginRequiredMixin, UpdateView):
+
+    template_name = "projects/timesheet_update.html"
+    model = Timesheet
+    context_object_name = "timesheet"
+    form_class = forms.TimesheetForm
+    pk_url_kwarg = "id"
+
+    def get_success_url(self):
+        return reverse("projects:timesheet-detail", kwargs={"id": self.object.id})
+
+
+class TimesheetDetailView(LoginRequiredMixin, DetailView):
+
+    template_name = "projects/timesheet_detail.html"
+    model = Timesheet
+    context_object_name = "timesheet"
     pk_url_kwarg = "id"

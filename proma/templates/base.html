@@ -62,6 +62,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link {% if "timesheets" in request.path %}active{% endif %}" href="{% url 'projects:timesheet-list' %}">
+                  <span class="fas fa-clock"></span>
+                  {% trans 'Timesheets' %}
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link {% if "invoices" in request.path %}active{% endif %}" href="{% url 'invoices:invoice-list' %}">
                   <span class="fas fa-dollar-sign"></span>
                   {% trans 'Invoices' %}

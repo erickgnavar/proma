@@ -355,3 +355,130 @@ class ProjectCreateInvoiceViewTestCase(TestCase):
             response["location"],
             reverse("invoices:invoice-detail", kwargs={"id": invoice.id}),
         )
+
+
+class TimesheetCreateViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.TimesheetCreateView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+
+    def test_match_expected_view(self):
+        url = resolve("/timesheets/create/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("form", response.context_data)
+
+    def test_create_timesheet(self):
+        project = mixer.blend("projects.Project")
+        data = {
+            "label": "test",
+            "project": project.id,
+            "date_start": "2018-01-01",
+            "date_end": "2018-01-01",
+        }
+        request = self.factory.post("/", data=data)
+        request.user = self.user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(reverse("projects:timesheet-list"), response["location"])
+
+    def test_create_timesheet_missing_fields(self):
+        data = {"label": "test"}
+        request = self.factory.post("/", data=data)
+        request.user = self.user
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.context_data["form"].errors) > 0)
+
+
+class TimesheetUpdateViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.TimesheetUpdateView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+        self.timesheet = mixer.blend(
+            "projects.Timesheet", project=mixer.blend("projects.Project")
+        )
+
+    def test_match_expected_view(self):
+        url = resolve("/timesheets/1/update/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        response = self.view(request, id=self.timesheet.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("form", response.context_data)
+
+    def test_update_timesheet(self):
+        data = {
+            "label": "another label",
+            "date_start": "2018-01-01",
+            "date_end": "2018-01-01",
+            "project": self.timesheet.project.id,
+        }
+        request = self.factory.post("/", data=data)
+        request.user = self.user
+        response = self.view(request, id=self.timesheet.id)
+        self.assertEqual(response.status_code, 302)
+        redirect_url = reverse(
+            "projects:timesheet-detail", kwargs={"id": self.timesheet.id}
+        )
+        self.timesheet.refresh_from_db()
+        self.assertEqual(self.timesheet.label, "another label")
+        self.assertEqual(redirect_url, response["location"])
+
+    def test_update_timesheet_missing_fields(self):
+        data = {"label": "test"}
+        request = self.factory.post("/", data=data)
+        request.user = self.user
+        response = self.view(request, id=self.timesheet.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.context_data["form"].errors) > 0)
+
+
+class TimesheetListViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.TimesheetListView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+
+    def test_match_expected_view(self):
+        url = resolve("/timesheets/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        mixer.cycle(5).blend("projects.Timesheet")
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("timesheets", response.context_data)
+        self.assertIn("filter", response.context_data)
+        self.assertEqual(response.context_data["timesheets"].count(), 5)
+
+
+class TimesheetDetailViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.TimesheetDetailView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+        self.timesheet = mixer.blend("projects.Timesheet")
+
+    def test_match_expected_view(self):
+        url = resolve("/timesheets/1/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        response = self.view(request, id=self.timesheet.id)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("timesheet", response.context_data)

@@ -31,4 +31,20 @@ urlpatterns = [
         views.ExpenseUpdateView.as_view(),
         name="expense-update",
     ),
+    path("timesheets/", views.TimesheetListView.as_view(), name="timesheet-list"),
+    path(
+        "timesheets/create/",
+        views.TimesheetCreateView.as_view(),
+        name="timesheet-create",
+    ),
+    path(
+        "timesheets/<int:id>/",
+        views.TimesheetDetailView.as_view(),
+        name="timesheet-detail",
+    ),
+    path(
+        "timesheets/<int:id>/update/",
+        views.TimesheetUpdateView.as_view(),
+        name="timesheet-update",
+    ),
 ]

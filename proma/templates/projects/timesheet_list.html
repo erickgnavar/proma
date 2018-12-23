@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Timesheets</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url "projects:timesheet-create" %}">
+          <i class="fas fa-plus"></i>
+          {% trans "New timesheet" %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% include "_filter.html" with filter=filter %}
+
+  <div class="row">
+    <div class="col-md-12">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <td>{% trans "Label" %}</td>
+            <td>{% trans "Date start" %}</td>
+            <td>{% trans "Date end" %}</td>
+            <td>{% trans "Duration" %}</td>
+            <td>{% trans "Project" %}</td>
+            <td>{% trans "Active" %}</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for timesheet in timesheets %}
+            <tr>
+              <td>
+                <a class="btn btn-outline-info btn-sm" href="{% url "projects:timesheet-detail" timesheet.id %}">
+                  <i class="fas fa-info"></i>
+                  {{ timesheet.label|default_if_none:"" }}
+                </a>
+              </td>
+              <td>{{ timesheet.date_start }}</td>
+              <td>{{ timesheet.date_end|default_if_none:"" }}</td>
+              <td>{{ timesheet.diff_humanize }}</td>
+              <td>{{ timesheet.project.name }}</td>
+              <td>
+                {% if timesheet.is_active %}
+                  <i class="fas fa-check-circle"></i>
+                {% else %}
+                  <i class="fas fa-times-circle"></i>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-12">
+      {% include "_pagination.html" %}
+    </div>
+  </div>
+{% endblock content %}

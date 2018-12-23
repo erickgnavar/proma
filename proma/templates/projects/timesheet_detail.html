@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block content %}
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ timesheet.name }}</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group mr-2">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url "projects:timesheet-update" timesheet.id %}">
+          <i class="fas fa-edit"></i>
+          {% trans "Edit" %}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td>{% trans "Project" %}</td>
+            <td>
+              {% if timesheet.project %}
+                <a href="{% url "projects:project-detail" timesheet.project.id %}">
+                  {{ timesheet.project }}
+                </a>
+              {% else %}
+                {% trans "No project assigned" %}
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td>{% trans "Label" %}</td>
+            <td>{{ timesheet.label|default_if_none:"" }}</td>
+          </tr>
+          <tr>
+            <td>{% trans "Date start" %}</td>
+            <td>{{ timesheet.date_start }}</td>
+          </tr>
+          <tr>
+            <td>{% trans "Date end" %}</td>
+            <td>{{ timesheet.date_end|default_if_none:"" }}</td>
+          </tr>
+          <tr>
+            <td>{% trans "Duration" %}</td>
+            <td>{{ timesheet.diff_humanize }}</td>
+          </tr>
+          <tr>
+            <td>{% trans "Is active?" %}</td>
+            <td>
+              {% if timesheet.is_active %}
+                <i class="fas fa-check-circle"></i>
+              {% else %}
+                <i class="fas fa-times-circle"></i>
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock content %}

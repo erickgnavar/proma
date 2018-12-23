@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 from proma.common.forms import FormWithDateFields
 from proma.invoices.models import Invoice
 
-from .models import Expense, Project
+from .models import Expense, Project, Timesheet
 
 
 class ProjectForm(FormWithDateFields, forms.ModelForm):
@@ -125,3 +125,12 @@ class CreateInvoicePercentageForm(CreateInvoiceFromProjectForm):
         return Invoice.create_from_project_flat(
             self.project, self.cleaned_data["description"], amount
         )
+
+
+class TimesheetForm(FormWithDateFields, forms.ModelForm):
+
+    date_fields = ("date_start", "date_end")
+
+    class Meta:
+        model = Timesheet
+        fields = ("label", "project", "date_start", "date_end")
