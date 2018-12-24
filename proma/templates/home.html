@@ -2,6 +2,32 @@
 {% load i18n %}
 {% block content %}
 <div class="row text-center">
+  <div class="col-md-12">
+    <div class="jumbotron">
+      <div class="row">
+        <div class="col-md-4">
+          <h2>{% trans "Overdue"|upper %}</h2>
+          <p class="display-4">
+            {{ invoices_summary.overdue }}
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h2>{% trans "In draft"|upper %}</h2>
+          <p class="display-4">
+            {{ invoices_summary.draft }}
+          </p>
+        </div>
+        <div class="col-md-4">
+          <h2>{% trans "Total outstanding"|upper %}</h2>
+          <p class="display-4">
+            {{ invoices_summary.total_outstanding }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row text-center">
   <div class="col-sm-3">
     <div class="card">
       <div class="card-body">

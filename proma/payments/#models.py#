@@ -1,0 +1,29 @@
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from model_utils.models import TimeStampedModel
+from django.contrib.postgres.fields import JSONField
+
+
+
+class Payment(TimeStampedModel):
+
+    PAYPAL = 'PAYPAL'
+
+    GATEWAY_CHOICES = (
+        (PAYPAL, _('Paypal')),
+    )
+
+    invoice = models.ForeignKey('invoices.Invoice', on_delete=models.CASCADE)
+
+    datetime = models.DateTimeField(_('Date'))
+    transaction_code = models.CharField(_('Transaction code'), max_length=50)
+    transaction_data = JSONField(_('Transaction data'), null=True)
+    gateway = models.CharField(_('Gateway'), max_length=20, choices=GATEWAY_CHOICES)
+
+    class Meta:
+        verbose_name = _('Payment')
+        verbose_name_plural = _('Payments')
+        default_related_name = 'payments'
+
+    def __str__(self):
+        return self

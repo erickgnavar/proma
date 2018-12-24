@@ -5,6 +5,7 @@ from functools import reduce
 from dateutil.relativedelta import relativedelta
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import Q, Sum
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
@@ -158,6 +159,16 @@ class Invoice(TimeStampedModel):
         else:
             self.tax_total = self.subtotal * (self.tax_percent / Decimal(100))
         self.total = self.subtotal + self.tax_total
+
+    @classmethod
+    def summary(cls):
+        today = timezone.now()
+        totals = cls.objects.aggregate(
+            overdue=Sum("total", filter=Q(due_date__lte=today, status=cls.OPEN)),
+            draft=Sum("total", filter=Q(status=cls.DRAFT)),
+        )
+        totals["total_outstanding"] = totals["overdue"] + totals["draft"]
+        return totals
 
     @classmethod
     def create_from_project_flat(cls, project, description, amount):

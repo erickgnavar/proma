@@ -1,3 +1,6 @@
+from datetime import timedelta
+from decimal import Decimal
+
 from django.test import TestCase
 from django.utils import timezone
 from mixer.backend.django import mixer
@@ -178,6 +181,29 @@ class InvoiceTestCase(TestCase):
         self.assertEqual(item.units, 10)
         self.assertEqual(item.rate, 20)
         self.assertEqual(invoice.total, 200)
+
+    def test_summary(self):
+        today = timezone.now()
+        # draft invoice
+        mixer.blend("invoices.Invoice", total=300, status=Invoice.DRAFT)
+        # overdue invoice
+        mixer.blend(
+            "invoices.Invoice",
+            due_date=today - timedelta(days=2),
+            total=200,
+            status=Invoice.OPEN,
+        )
+        # ontime invoice
+        mixer.blend(
+            "invoices.Invoice",
+            due_date=today + timedelta(days=2),
+            total=100,
+            status=Invoice.OPEN,
+        )
+        summary = Invoice.summary()
+        self.assertEqual(summary["draft"], Decimal(300))
+        self.assertEqual(summary["overdue"], Decimal(200))
+        self.assertEqual(summary["total_outstanding"], Decimal(500))
 
 
 class ItemTestCase(TestCase):
