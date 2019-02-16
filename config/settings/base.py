@@ -46,7 +46,7 @@ DJANGO_APPS = [
     "django.contrib.humanize",
 ]
 
-THIRD_PARTY_APPS = ["crispy_forms"]
+THIRD_PARTY_APPS = ["crispy_forms", "django_celery_results"]
 
 LOCAL_APPS = [
     "proma.common",
@@ -156,3 +156,5 @@ LOGOUT_REDIRECT_URL = "/"
 MESSAGE_TAGS = {messages.ERROR: "danger"}  # used to play nice with bootstrap4 styles
 
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+
+CELERY_RESULT_BACKEND = "django-db"

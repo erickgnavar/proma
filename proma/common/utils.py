@@ -41,7 +41,7 @@ class Email(object):
                 subject, html_content, from_email, to, attachments=attachments
             )
             message.content_subtype = "html"
-        message.send(fail_silently=not settings.DEBUG)
+        return message.send(fail_silently=not settings.DEBUG)
 
 
 class PDFReport:

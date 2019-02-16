@@ -30,7 +30,7 @@ def notify_open_invoice(self, invoice_id):
             "invoices:invoice-public-detail", kwargs={"token": invoice.token}
         )
         report = InvoicePDF(invoice=invoice)
-        Email.send_mail(
+        return Email.send_mail(
             template_name="email/invoice_opened.html",
             context={"invoice": invoice, "url": f"{settings.DOMAIN}{path}"},
             subject=_("New invoice #%s" % invoice.number),
