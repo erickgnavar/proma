@@ -5,6 +5,8 @@ from django.utils.translation import get_language, get_language_info
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 
+from proma.enums import Currency
+
 from . import exceptions
 
 
@@ -29,14 +31,6 @@ class Project(TimeStampedModel):
         (MOUNTHLY_RATE, _("Mounthly Rate")),
     )
 
-    USD = "USD"
-    EUR = "EUR"
-    PEN = "PEN"
-
-    CURRENCY_CHOICES = ((USD, "USD"), (EUR, "EUR"), (PEN, "PEN"))
-
-    # TODO: get all currencies and put them in another file
-
     client = models.ForeignKey("clients.Client", on_delete=models.CASCADE)
 
     name = models.CharField(_("Name"), max_length=100)
@@ -53,7 +47,10 @@ class Project(TimeStampedModel):
     )
     rate = models.DecimalField(_("Rate"), max_digits=10, decimal_places=2)
     currency = models.CharField(
-        _("Currency"), max_length=5, choices=CURRENCY_CHOICES, default=USD
+        _("Currency"),
+        max_length=5,
+        choices=[(currency.name, currency.value) for currency in Currency],
+        default=Currency.USD.name,
     )
     notes = models.TextField(_("Notes"), blank=True, null=True)
 

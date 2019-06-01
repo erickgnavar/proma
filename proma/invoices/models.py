@@ -10,6 +10,8 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
 
+from proma.enums import Currency
+
 from .exceptions import InvoiceException
 from .querysets import InvoiceQuerySet
 
@@ -42,6 +44,14 @@ class Invoice(TimeStampedModel):
         default=secrets.token_hex,
         editable=False,
     )
+
+    currency = models.CharField(
+        _("Currency"),
+        max_length=5,
+        choices=[(currency.name, currency.value) for currency in Currency],
+        default=Currency.USD.name,
+    )
+
     # use a random value intil the invoice is active
     issue_date = models.DateField(_("Issue date"), default=timezone.now)
     due_date = models.DateField(_("Due date"), default=default_due_date)
@@ -172,7 +182,9 @@ class Invoice(TimeStampedModel):
 
     @classmethod
     def create_from_project_flat(cls, project, description, amount):
-        invoice = cls.objects.create(client=project.client, project=project)
+        invoice = cls.objects.create(
+            client=project.client, project=project, currency=project.currency
+        )
         invoice.items.create(rate=amount, units=1, description=description)
         invoice.compute_amounts()
         invoice.save()
@@ -180,7 +192,9 @@ class Invoice(TimeStampedModel):
 
     @classmethod
     def create_from_project_rate(cls, project, description, rate, units):
-        invoice = cls.objects.create(client=project.client, project=project)
+        invoice = cls.objects.create(
+            client=project.client, project=project, currency=project.currency
+        )
         invoice.items.create(rate=rate, units=units, description=description)
         invoice.compute_amounts()
         invoice.save()

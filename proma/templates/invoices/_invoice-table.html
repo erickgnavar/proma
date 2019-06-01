@@ -33,7 +33,7 @@
           {{ invoice.due_date|naturalday }}
         </td>
         <td class="text-right align-middle">
-          {{ invoice.total }}
+          {{ invoice.get_currency_display }} {{ invoice.total }}
         </td>
         <td class="text-center align-middle">
           {% if invoice.status == invoice.PAID %}

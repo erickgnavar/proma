@@ -60,6 +60,10 @@
             </td>
           </tr>
           <tr>
+            <td>{% trans 'Currency' %}</td>
+            <td>{{ invoice.get_currency_display }}</td>
+          </tr>
+          <tr>
             <td>{% trans 'Issue date' %}</td>
             <td>{{ invoice.issue_date }}</td>
           </tr>
@@ -76,7 +80,7 @@
           {% if invoice.status == invoice.CANCELLED %}
           <tr>
             <td>{% trans 'Cancellation date' %}</td>
-            <td>{{ invoice.cancellation_date }}</td>
+            <td>{{ invoice.cancellation_date|default_if_none:"" }}</td>
           </tr>
           {% endif %}
           {% if invoice.status == invoice.PAID %}

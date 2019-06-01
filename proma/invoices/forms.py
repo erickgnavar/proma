@@ -31,6 +31,7 @@ class InvoiceForm(FormWithDateFields, forms.ModelForm):
             "tax_percent",
             "notes",
             "attachment",
+            "currency",
         )
 
 

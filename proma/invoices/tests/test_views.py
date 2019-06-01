@@ -5,6 +5,8 @@ from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
 from mixer.backend.django import mixer
 
+from proma.enums import Currency
+
 from .. import views
 from ..models import Invoice
 
@@ -34,6 +36,7 @@ class InvoiceCreateViewTestCase(TestCase):
             "project": self.project.id,
             "issue_date": "2018-10-10",
             "due_date": "2018-10-11",
+            "currency": Currency.EUR.name,
             "items-TOTAL_FORMS": 1,
             "items-INITIAL_FORMS": 0,
             "items-0-description": "test",
@@ -90,6 +93,7 @@ class InvoiceUpdateViewTestCase(TestCase):
             "project": self.project.id,
             "issue_date": "2018-10-10",
             "due_date": "2018-10-12",
+            "currency": Currency.EUR.name,
             "items-TOTAL_FORMS": 1,
             "items-INITIAL_FORMS": 0,
             "items-0-description": "test",

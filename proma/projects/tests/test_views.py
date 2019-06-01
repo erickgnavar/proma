@@ -3,6 +3,8 @@ from django.test import RequestFactory, TestCase
 from django.urls import resolve, reverse
 from mixer.backend.django import mixer
 
+from proma.enums import Currency
+
 from .. import forms, views
 from ..models import Project, Timesheet
 
@@ -31,7 +33,7 @@ class ProjectCreateViewTestCase(TestCase):
             "client": client.id,
             "start_date": "2018-01-01",
             "payment_type": Project.FLAT_RATE,
-            "currency": Project.USD,
+            "currency": Currency.USD.name,
             "rate": 20,
         }
         request = self.factory.post("/", data=data)
@@ -73,7 +75,7 @@ class ProjectUpdateViewTestCase(TestCase):
             "client": self.project.client.id,
             "start_date": "2018-01-01",
             "payment_type": Project.DAILY_RATE,
-            "currency": Project.USD,
+            "currency": Currency.USD.name,
             "rate": 20,
         }
         request = self.factory.post("/", data=data)
