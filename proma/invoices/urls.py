@@ -16,6 +16,11 @@ urlpatterns = [
         views.InvoiceUpdateView.as_view(),
         name="invoice-update",
     ),
+    path(
+        "invoices/<int:id>/delete/",
+        views.InvoiceDeleteView.as_view(),
+        name="invoice-delete",
+    ),
     re_path(
         r"invoices/(?P<id>\d+)/action/(?P<action>(open|cancel))/",
         views.InvoiceActionView.as_view(),

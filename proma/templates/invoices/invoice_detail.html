@@ -13,6 +13,10 @@
           <i class="fas fa-edit"></i>
           {% trans 'Edit' %}
         </a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'invoices:invoice-delete' invoice.id %}">
+          <i class="fas fa-trash"></i>
+          {% trans 'Delete' %}
+        </a>
         {% elif invoice.status == invoice.OPEN %}
         <a class="btn btn-sm btn-outline-danger" href="{% url 'invoices:invoice-action' invoice.id 'cancel' %}">
           <i class="fas fa-ban"></i> {% trans 'Cancel' %}

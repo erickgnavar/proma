@@ -5,7 +5,13 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import ugettext as _
-from django.views.generic import CreateView, DetailView, RedirectView, UpdateView
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    RedirectView,
+    UpdateView,
+    DeleteView,
+)
 from django_filters.views import FilterView
 
 from proma.common.utils import PDFView
@@ -82,6 +88,21 @@ class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("invoices:invoice-detail", kwargs={"id": self.object.id})
+
+
+class InvoiceDeleteView(LoginRequiredMixin, DeleteView):
+
+    template_name = "invoices/invoice_delete.html"
+    model = Invoice
+    context_object_name = "invoice"
+    pk_url_kwarg = "id"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status=Invoice.DRAFT)
+
+    def get_success_url(self):
+        messages.success(self.request, _("Invoice deleted"))
+        return reverse("invoices:invoice-list")
 
 
 class InvoiceListView(LoginRequiredMixin, FilterView):

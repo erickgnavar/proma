@@ -133,6 +133,51 @@ class InvoiceUpdateViewTestCase(TestCase):
         )
 
 
+class InvoiceDeleteViewTestCase(TestCase):
+    def setUp(self):
+        self.view = views.InvoiceDeleteView.as_view()
+        self.factory = RequestFactory()
+        self.user = mixer.blend("users.User")
+        self.client = mixer.blend("clients.Client")
+        self.project = mixer.blend("projects.Project")
+        self.invoice = mixer.blend(
+            "invoices.Invoice",
+            client=self.client,
+            project=self.project,
+            status=Invoice.DRAFT,
+        )
+
+    def test_match_expected_view(self):
+        url = resolve("/invoices/1/delete/")
+        self.assertEqual(url.func.__name__, self.view.__name__)
+
+    def test_load_sucessful(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_raise_404_when_invoice_is_not_a_draft(self):
+        request = self.factory.get("/")
+        request.user = self.user
+        self.invoice.status = Invoice.OPEN
+        self.invoice.save()
+        with self.assertRaises(Http404):
+            self.view(request, id=self.invoice.id)
+
+    def test_delete_invoice(self):
+        request = self.factory.post("/")
+        request.user = self.user
+        request.session = {}
+        request._messages = FallbackStorage(request)
+        response = self.view(request, id=self.invoice.id)
+        self.assertEqual(response.status_code, 302)
+        redirect_url = reverse("invoices:invoice-list")
+        self.assertEqual(response["location"], redirect_url)
+        with self.assertRaises(Invoice.DoesNotExist):
+            self.invoice.refresh_from_db()
+
+
 class InvoiceListViewTestCase(TestCase):
     def setUp(self):
         self.view = views.InvoiceListView.as_view()
