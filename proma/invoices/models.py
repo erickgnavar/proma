@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Q, Sum
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.models import TimeStampedModel
@@ -174,8 +175,10 @@ class Invoice(TimeStampedModel):
     def summary(cls):
         today = timezone.now()
         totals = cls.objects.aggregate(
-            overdue=Sum("total", filter=Q(due_date__lte=today, status=cls.OPEN)),
-            draft=Sum("total", filter=Q(status=cls.DRAFT)),
+            overdue=Coalesce(
+                Sum("total", filter=Q(due_date__lte=today, status=cls.OPEN)), 0
+            ),
+            draft=Coalesce(Sum("total", filter=Q(status=cls.DRAFT)), 0),
         )
         totals["total_outstanding"] = totals["overdue"] + totals["draft"]
         return totals
