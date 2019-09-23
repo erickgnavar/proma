@@ -18,7 +18,7 @@ class InvoicePDF(PDFReport):
         config = Configuration.get_instance()
         return {
             "invoice": self.invoice,
-            "currency": self.invoice.project.currency,
+            "currency": self.invoice.currency,
             "company": config.get_info("company"),
             "logo_path": config.get_company_logo_path(),
         }
