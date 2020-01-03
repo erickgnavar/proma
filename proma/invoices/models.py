@@ -151,10 +151,12 @@ class Invoice(TimeStampedModel):
         Compute invoice number using the current year and a counter based
         in the number of invoices created
         """
+        # FIXME: there is a bug when the invoice was created in a different year
+        # than it is opened
         now = timezone.now()
         counter = (
             cls.objects.exclude(status=cls.DRAFT)
-            .filter(issue_date__year__gte=now.year, issue_date__year__lte=now.year + 1)
+            .filter(issue_date__year__gte=now.year, issue_date__year__lt=now.year + 1)
             .count()
             + 1
         )

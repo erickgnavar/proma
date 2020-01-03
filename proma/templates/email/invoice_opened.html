@@ -7,4 +7,8 @@
   <p>
     <a href="{{ url }}">#{{ invoice.number }}</a>
   </p>
+  <p>
+    {% trans "Payment method details" %}
+  </p>
+  <pre>{{ config.payment_method_info }}</pre>
 {% endblock content %}
