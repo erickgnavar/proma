@@ -34,6 +34,12 @@ class Configuration(TimeStampedModel):
     company_zipcode = models.CharField(
         _("Zipcode"), max_length=10, null=True, blank=True
     )
+    payment_method_info = models.TextField(
+        _("Payment method info"),
+        blank=True,
+        null=True,
+        help_text=_("This information will be sent within invoice email"),
+    )
 
     def str(self):
         return "config"

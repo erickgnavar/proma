@@ -5,6 +5,7 @@ from django.utils.translation import ugettext as _
 
 from config.celery import app
 from proma.common.utils import Email
+from proma.config.models import Configuration
 from proma.invoices.reports import InvoicePDF
 
 from .models import Invoice
@@ -21,6 +22,8 @@ logger = get_task_logger(__name__)
 )
 def notify_open_invoice(self, invoice_id):
     logger.info("Notification for invoice:%d", invoice_id)
+    config = Configuration.get_instance()
+
     try:
         invoice = Invoice.objects.get(id=invoice_id)
         assert (
@@ -32,7 +35,11 @@ def notify_open_invoice(self, invoice_id):
         report = InvoicePDF(invoice=invoice)
         return Email.send_mail(
             template_name="email/invoice_opened.html",
-            context={"invoice": invoice, "url": f"{settings.DOMAIN}{path}"},
+            context={
+                "invoice": invoice,
+                "url": f"{settings.DOMAIN}{path}",
+                "config": config,
+            },
             subject=_("New invoice #%s" % invoice.number),
             to=[invoice.client.email],
             attachments=((report.get_filename(), report.render(), "application/pdf"),),
