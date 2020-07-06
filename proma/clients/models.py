@@ -35,7 +35,7 @@ class Client(TimeStampedModel):
     @property
     def gravatar_image_url(self):
         hash_ = hashlib.md5(self.email.strip().encode()).hexdigest()
-        return f"http://www.gravatar.com/avatar/{hash_}"
+        return f"https://www.gravatar.com/avatar/{hash_}"
 
     class Meta:
         verbose_name = _("Client")
