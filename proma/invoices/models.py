@@ -178,9 +178,15 @@ class Invoice(TimeStampedModel):
         today = timezone.now()
         totals = cls.objects.aggregate(
             overdue=Coalesce(
-                Sum("total", filter=Q(due_date__lte=today, status=cls.OPEN)), 0
+                Sum("total", filter=Q(due_date__lte=today, status=cls.OPEN)),
+                0,
+                output_field=models.DecimalField(),
             ),
-            draft=Coalesce(Sum("total", filter=Q(status=cls.DRAFT)), 0),
+            draft=Coalesce(
+                Sum("total", filter=Q(status=cls.DRAFT)),
+                0,
+                output_field=models.DecimalField(),
+            ),
         )
         totals["total_outstanding"] = totals["overdue"] + totals["draft"]
         return totals
